@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find a Mentor — NEXUS</title>
+  <meta name="description" content="Find your NEXUS mentor — matched by domain, career goal, and learning style.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+
+<div class="dash-layout">
+
+  <!-- ─── SIDEBAR ─────────────────────────────────────────────── -->
+  <aside class="dash-sidebar" role="navigation" aria-label="Dashboard navigation">
+    <div class="dash-sidebar-logo">
+      <a href="index.html" class="logo" id="dash-logo">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none">
+          <polygon points="12,2 22,7.5 22,16.5 12,22 2,16.5 2,7.5" fill="white" opacity="0.15"/>
+          <polygon points="12,2 22,7.5 22,16.5 12,22 2,16.5 2,7.5" fill="none" stroke="white" stroke-width="1.2"/>
+          <polygon points="12,6 18,9.5 18,14.5 12,18 6,14.5 6,9.5" fill="#1A1A2E"/>
+          <circle cx="12" cy="12" r="2.8" fill="#4CAF50"/>
+        </svg>
+        <span>NEXUS</span>
+      </a>
+    </div>
+    <nav class="dash-nav">
+      <a href="dashboard.html" class="dash-nav-item" style="text-decoration:none;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="#" class="dash-nav-item" style="text-decoration:none;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        <span>Skill Gap</span>
+      </a>
+      <a href="#" class="dash-nav-item" style="text-decoration:none;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+        <span>Mock Interview</span>
+      </a>
+      <a href="credentials.html" class="dash-nav-item" style="text-decoration:none;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Credentials</span>
+      </a>
+      <a href="mentors.html" class="dash-nav-item active" style="text-decoration:none;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Mentor</span>
+      </a>
+    </nav>
+    <div class="dash-sidebar-bottom">
+      <div class="dash-student-info">
+        <div class="dash-avatar">--</div>
+        <div>
+          <div class="dash-student-name">Your Name</div>
+          <div class="dash-student-score">Score: — / 100</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─── MAIN ─────────────────────────────────────────────────── -->
+  <main class="dash-main" role="main">
+    <div class="dash-topbar">
+      <div>
+        <div class="dash-welcome">Find Your Mentor</div>
+        <div class="dash-date" id="mentors-date"></div>
+      </div>
+      <div class="dash-topbar-right">
+        <a href="index.html" class="btn btn-outline btn-sm">← Back to Site</a>
+        <button class="btn btn-outline btn-sm" id="match-prefs-btn">Your match preferences</button>
+      </div>
+    </div>
+
+    <div class="mentors-content">
+
+      <!-- Sub heading -->
+      <div class="mentors-page-header">
+        <div>
+          <p class="mentors-page-sub">Matched by domain, career goal, and learning style — not just availability.</p>
+        </div>
+      </div>
+
+      <!-- ─── FILTERS ─────────────────────────────────────────── -->
+      <div class="filter-row" id="filter-row" role="group" aria-label="Mentor filters">
+
+        <div class="filter-group">
+          <span class="filter-group-label">Domain</span>
+          <div class="filter-pills" id="filter-domain">
+            <button class="filter-pill active" data-group="domain" data-val="all">All</button>
+            <button class="filter-pill" data-group="domain" data-val="dsa">DSA</button>
+            <button class="filter-pill" data-group="domain" data-val="sysdesign">System Design</button>
+            <button class="filter-pill" data-group="domain" data-val="ml">ML</button>
+            <button class="filter-pill" data-group="domain" data-val="frontend">Frontend</button>
+            <button class="filter-pill" data-group="domain" data-val="backend">Backend</button>
+            <button class="filter-pill" data-group="domain" data-val="devops">DevOps</button>
+            <button class="filter-pill" data-group="domain" data-val="blockchain">Blockchain</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <span class="filter-group-label">Experience</span>
+          <div class="filter-pills" id="filter-exp">
+            <button class="filter-pill active" data-group="exp" data-val="any">Any</button>
+            <button class="filter-pill" data-group="exp" data-val="2-5">2–5 yrs</button>
+            <button class="filter-pill" data-group="exp" data-val="5-10">5–10 yrs</button>
+            <button class="filter-pill" data-group="exp" data-val="10+">10+ yrs</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <span class="filter-group-label">Company</span>
+          <div class="filter-pills" id="filter-company">
+            <button class="filter-pill active" data-group="company" data-val="any">Any</button>
+            <button class="filter-pill" data-group="company" data-val="faang">FAANG</button>
+            <button class="filter-pill" data-group="company" data-val="startup">Startup</button>
+            <button class="filter-pill" data-group="company" data-val="mnc">MNC</button>
+            <button class="filter-pill" data-group="company" data-val="research">Research</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <span class="filter-group-label">Availability</span>
+          <div class="filter-pills" id="filter-avail">
+            <button class="filter-pill active" data-group="avail" data-val="any">Any</button>
+            <button class="filter-pill" data-group="avail" data-val="weekends">Weekends</button>
+            <button class="filter-pill" data-group="avail" data-val="weekdays">Weekday evenings</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ─── MENTOR CARDS ─────────────────────────────────────── -->
+      <div class="mentors-grid" id="mentors-grid">
+
+        <!-- Card 1 -->
+        <div class="mentor-card" id="mcard-1" data-domains="sysdesign,dsa,backend" data-company="faang" data-exp="5-10" data-avail="weekends">
+          <div class="mentor-avatar-circle">VN</div>
+          <div class="mentor-name">Vikram Nair</div>
+          <div class="mentor-role-line">SDE-3 &nbsp;·&nbsp; Amazon &nbsp;·&nbsp; 7 yrs exp</div>
+          <div class="mentor-domain-chips">
+            <span class="mentor-domain-chip">System Design</span>
+            <span class="mentor-domain-chip">DSA</span>
+            <span class="mentor-domain-chip">Backend</span>
+          </div>
+          <div class="mentor-match-section">
+            <div class="mentor-match-label-row">
+              <span class="mentor-match-label">Match Score</span>
+              <span class="mentor-match-pct" data-mentor="1">92%</span>
+            </div>
+            <div class="mentor-match-track">
+              <div class="mentor-match-fill" style="width:92%"></div>
+            </div>
+            <div class="match-tooltip" id="tooltip-1">
+              <div class="match-tooltip-title">Why 92%?</div>
+              <div class="match-tooltip-row yes">✓ Domain overlap: System Design, DSA</div>
+              <div class="match-tooltip-row yes">✓ Career goal: SDE at product company</div>
+              <div class="match-tooltip-row yes">✓ Learning style: Project-based</div>
+              <div class="match-tooltip-row no">✗ Timezone: slight mismatch</div>
+            </div>
+          </div>
+          <div class="mentor-stats-list">
+            Students mentored: <strong>18</strong><br>
+            Avg score improvement: <strong>+21 pts</strong><br>
+            Response rate: <strong>96%</strong>
+          </div>
+          <div class="mentor-rep">★★★★★ &nbsp;<span style="font-weight:400;color:var(--gray-mid)">4.9</span> — outcome-based</div>
+          <div class="mentor-card-btns">
+            <button class="btn btn-primary btn-sm" onclick="void(0)">Request Session →</button>
+            <button class="btn btn-outline btn-sm view-profile-btn" data-mentor="1">View Profile</button>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="mentor-card" id="mcard-2" data-domains="ml,backend" data-company="research" data-exp="5-10" data-avail="weekdays">
+          <div class="mentor-avatar-circle">NK</div>
+          <div class="mentor-name">Neha Kulkarni</div>
+          <div class="mentor-role-line">ML Engineer &nbsp;·&nbsp; Microsoft Research &nbsp;·&nbsp; 6 yrs exp</div>
+          <div class="mentor-domain-chips">
+            <span class="mentor-domain-chip">ML</span>
+            <span class="mentor-domain-chip">Python</span>
+            <span class="mentor-domain-chip">NLP</span>
+          </div>
+          <div class="mentor-match-section">
+            <div class="mentor-match-label-row">
+              <span class="mentor-match-label">Match Score</span>
+              <span class="mentor-match-pct" data-mentor="2">88%</span>
+            </div>
+            <div class="mentor-match-track">
+              <div class="mentor-match-fill" style="width:88%"></div>
+            </div>
+            <div class="match-tooltip" id="tooltip-2">
+              <div class="match-tooltip-title">Why 88%?</div>
+              <div class="match-tooltip-row yes">✓ Domain overlap: ML, NLP</div>
+              <div class="match-tooltip-row yes">✓ Mentors researchers + SDE roles</div>
+              <div class="match-tooltip-row yes">✓ Weekday evening sessions</div>
+              <div class="match-tooltip-row no">✗ Career goal partially aligned</div>
+            </div>
+          </div>
+          <div class="mentor-stats-list">
+            Students mentored: <strong>11</strong><br>
+            Avg score improvement: <strong>+16 pts</strong><br>
+            Response rate: <strong>100%</strong>
+          </div>
+          <div class="mentor-rep">★★★★★ &nbsp;<span style="font-weight:400;color:var(--gray-mid)">5.0</span> — outcome-based</div>
+          <div class="mentor-card-btns">
+            <button class="btn btn-primary btn-sm" onclick="void(0)">Request Session →</button>
+            <button class="btn btn-outline btn-sm view-profile-btn" data-mentor="2">View Profile</button>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="mentor-card" id="mcard-3" data-domains="frontend,backend" data-company="startup" data-exp="2-5" data-avail="weekends">
+          <div class="mentor-avatar-circle">AB</div>
+          <div class="mentor-name">Arjun Bose</div>
+          <div class="mentor-role-line">Frontend Lead &nbsp;·&nbsp; PhonePe &nbsp;·&nbsp; 4 yrs exp</div>
+          <div class="mentor-domain-chips">
+            <span class="mentor-domain-chip">Frontend</span>
+            <span class="mentor-domain-chip">React</span>
+            <span class="mentor-domain-chip">TypeScript</span>
+          </div>
+          <div class="mentor-match-section">
+            <div class="mentor-match-label-row">
+              <span class="mentor-match-label">Match Score</span>
+              <span class="mentor-match-pct" data-mentor="3">81%</span>
+            </div>
+            <div class="mentor-match-track">
+              <div class="mentor-match-fill" style="width:81%"></div>
+            </div>
+            <div class="match-tooltip" id="tooltip-3">
+              <div class="match-tooltip-title">Why 81%?</div>
+              <div class="match-tooltip-row yes">✓ Domain overlap: Frontend, React</div>
+              <div class="match-tooltip-row yes">✓ Startup experience relevant</div>
+              <div class="match-tooltip-row no">✗ System Design not core</div>
+              <div class="match-tooltip-row no">✗ Timezone: moderate mismatch</div>
+            </div>
+          </div>
+          <div class="mentor-stats-list">
+            Students mentored: <strong>9</strong><br>
+            Avg score improvement: <strong>+14 pts</strong><br>
+            Response rate: <strong>89%</strong>
+          </div>
+          <div class="mentor-rep">★★★★½ &nbsp;<span style="font-weight:400;color:var(--gray-mid)">4.6</span> — outcome-based</div>
+          <div class="mentor-card-btns">
+            <button class="btn btn-primary btn-sm" onclick="void(0)">Request Session →</button>
+            <button class="btn btn-outline btn-sm view-profile-btn" data-mentor="3">View Profile</button>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="mentor-card" id="mcard-4" data-domains="devops,backend" data-company="mnc" data-exp="5-10" data-avail="weekdays">
+          <div class="mentor-avatar-circle">SP</div>
+          <div class="mentor-name">Shruti Patel</div>
+          <div class="mentor-role-line">DevOps Lead &nbsp;·&nbsp; Flipkart &nbsp;·&nbsp; 8 yrs exp</div>
+          <div class="mentor-domain-chips">
+            <span class="mentor-domain-chip">DevOps</span>
+            <span class="mentor-domain-chip">Cloud</span>
+            <span class="mentor-domain-chip">Kubernetes</span>
+          </div>
+          <div class="mentor-match-section">
+            <div class="mentor-match-label-row">
+              <span class="mentor-match-label">Match Score</span>
+              <span class="mentor-match-pct" data-mentor="4">79%</span>
+            </div>
+            <div class="mentor-match-track">
+              <div class="mentor-match-fill" style="width:79%"></div>
+            </div>
+            <div class="match-tooltip" id="tooltip-4">
+              <div class="match-tooltip-title">Why 79%?</div>
+              <div class="match-tooltip-row yes">✓ Covers your Cloud/DevOps gap</div>
+              <div class="match-tooltip-row yes">✓ Strong infra background</div>
+              <div class="match-tooltip-row no">✗ DSA focus limited</div>
+              <div class="match-tooltip-row no">✗ Not aligned to SDE-1 goal</div>
+            </div>
+          </div>
+          <div class="mentor-stats-list">
+            Students mentored: <strong>22</strong><br>
+            Avg score improvement: <strong>+19 pts</strong><br>
+            Response rate: <strong>93%</strong>
+          </div>
+          <div class="mentor-rep">★★★★★ &nbsp;<span style="font-weight:400;color:var(--gray-mid)">4.8</span> — outcome-based</div>
+          <div class="mentor-card-btns">
+            <button class="btn btn-primary btn-sm" onclick="void(0)">Request Session →</button>
+            <button class="btn btn-outline btn-sm view-profile-btn" data-mentor="4">View Profile</button>
+          </div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="mentor-card" id="mcard-5" data-domains="backend,sysdesign" data-company="startup" data-exp="2-5" data-avail="weekends">
+          <div class="mentor-avatar-circle">RS</div>
+          <div class="mentor-name">Rohan Sen</div>
+          <div class="mentor-role-line">Backend SDE &nbsp;·&nbsp; Razorpay &nbsp;·&nbsp; 3 yrs exp</div>
+          <div class="mentor-domain-chips">
+            <span class="mentor-domain-chip">Backend</span>
+            <span class="mentor-domain-chip">APIs</span>
+            <span class="mentor-domain-chip">Microservices</span>
+          </div>
+          <div class="mentor-match-section">
+            <div class="mentor-match-label-row">
+              <span class="mentor-match-label">Match Score</span>
+              <span class="mentor-match-pct" data-mentor="5">76%</span>
+            </div>
+            <div class="mentor-match-track">
+              <div class="mentor-match-fill" style="width:76%"></div>
+            </div>
+            <div class="match-tooltip" id="tooltip-5">
+              <div class="match-tooltip-title">Why 76%?</div>
+              <div class="match-tooltip-row yes">✓ Backend/API overlap</div>
+              <div class="match-tooltip-row yes">✓ Fintech domain relevant</div>
+              <div class="match-tooltip-row no">✗ Lower experience level</div>
+              <div class="match-tooltip-row no">✗ DSA coaching limited</div>
+            </div>
+          </div>
+          <div class="mentor-stats-list">
+            Students mentored: <strong>7</strong><br>
+            Avg score improvement: <strong>+12 pts</strong><br>
+            Response rate: <strong>91%</strong>
+          </div>
+          <div class="mentor-rep">★★★★½ &nbsp;<span style="font-weight:400;color:var(--gray-mid)">4.5</span> — outcome-based</div>
+          <div class="mentor-card-btns">
+            <button class="btn btn-primary btn-sm" onclick="void(0)">Request Session →</button>
+            <button class="btn btn-outline btn-sm view-profile-btn" data-mentor="5">View Profile</button>
+          </div>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="mentor-card" id="mcard-6" data-domains="blockchain" data-company="startup" data-exp="2-5" data-avail="weekends">
+          <div class="mentor-avatar-circle">DI</div>
+          <div class="mentor-name">Divya Iyer</div>
+          <div class="mentor-role-line">Blockchain Dev &nbsp;·&nbsp; Polygon Labs &nbsp;·&nbsp; 4 yrs exp</div>
+          <div class="mentor-domain-chips">
+            <span class="mentor-domain-chip">Blockchain</span>
+            <span class="mentor-domain-chip">Web3</span>
+            <span class="mentor-domain-chip">Solidity</span>
+          </div>
+          <div class="mentor-match-section">
+            <div class="mentor-match-label-row">
+              <span class="mentor-match-label">Match Score</span>
+              <span class="mentor-match-pct" data-mentor="6">72%</span>
+            </div>
+            <div class="mentor-match-track">
+              <div class="mentor-match-fill" style="width:72%"></div>
+            </div>
+            <div class="match-tooltip" id="tooltip-6">
+              <div class="match-tooltip-title">Why 72%?</div>
+              <div class="match-tooltip-row yes">✓ Matches NEXUS project domain</div>
+              <div class="match-tooltip-row yes">✓ On-chain credentials expertise</div>
+              <div class="match-tooltip-row no">✗ Career goal mismatch (SDE ≠ Web3)</div>
+              <div class="match-tooltip-row no">✗ DSA support limited</div>
+            </div>
+          </div>
+          <div class="mentor-stats-list">
+            Students mentored: <strong>5</strong><br>
+            Avg score improvement: <strong>+11 pts</strong><br>
+            Response rate: <strong>88%</strong>
+          </div>
+          <div class="mentor-rep">★★★★★ &nbsp;<span style="font-weight:400;color:var(--gray-mid)">4.7</span> — outcome-based</div>
+          <div class="mentor-card-btns">
+            <button class="btn btn-primary btn-sm" onclick="void(0)">Request Session →</button>
+            <button class="btn btn-outline btn-sm view-profile-btn" data-mentor="6">View Profile</button>
+          </div>
+        </div>
+
+      </div>
+      <!-- END mentors-grid -->
+
+    </div>
+    <!-- END mentors-content -->
+  </main>
+
+</div>
+
+<!-- ─── MENTOR PROFILE MODAL ─────────────────────────────────── -->
+<div class="modal-overlay" id="mentor-modal-overlay" role="dialog" aria-modal="true" aria-label="Mentor profile">
+  <div class="mentor-modal" id="mentor-modal-card">
+    <button class="modal-close" id="modal-close-btn" aria-label="Close modal">&times;</button>
+    <div id="modal-content"><!-- filled by JS --></div>
+  </div>
+</div>
+
+<script src="mentors.js"></script>
+<script src="chat.js"></script>
+</body>
+</html>

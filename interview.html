@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coding Interview — NEXUS</title>
+  <meta name="description" content="NEXUS AI-proctored coding interview with real LeetCode questions, Monaco IDE, and live face/phone detection.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="interview.css">
+  <!-- Monaco Editor (VS Code engine) -->
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
+  <!-- TensorFlow.js + COCO-SSD for phone detection -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+  <!-- MediaPipe Face Detection -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/face_detection.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="iv2-page">
+
+  <!-- ─── NEXUS Sidebar ──────────────────────────────────────── -->
+  <aside class="dash-sidebar" role="navigation" aria-label="Dashboard navigation">
+    <div class="dash-sidebar-logo">
+      <a href="dashboard.html" class="logo" aria-label="NEXUS — back to dashboard">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <polygon points="12,2 22,7.5 22,16.5 12,22 2,16.5 2,7.5" fill="white" opacity="0.15"/>
+          <polygon points="12,2 22,7.5 22,16.5 12,22 2,16.5 2,7.5" fill="none" stroke="white" stroke-width="1.2"/>
+          <polygon points="12,6 18,9.5 18,14.5 12,18 6,14.5 6,9.5" fill="#1A1A2E"/>
+          <circle cx="12" cy="12" r="2.8" fill="#4CAF50"/>
+        </svg>
+        <span>NEXUS</span>
+      </a>
+    </div>
+    <nav class="dash-nav" aria-label="Primary navigation">
+      <a href="dashboard.html" class="dash-nav-item" style="text-decoration:none;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="dashboard.html#skills" class="dash-nav-item" style="text-decoration:none;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        <span>Skill Gap</span>
+      </a>
+      <a href="interview.html" class="dash-nav-item active" style="text-decoration:none;" aria-current="page">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.8 19.8 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.8 19.8 0 01.03 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+        <span>Mock Interview</span>
+      </a>
+      <a href="credentials.html" class="dash-nav-item" style="text-decoration:none;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8a2 2 0 00-2 2v2h12V5a2 2 0 00-2-2z"/></svg>
+        <span>Credentials</span>
+      </a>
+      <a href="mentors.html" class="dash-nav-item" style="text-decoration:none;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        <span>Mentors</span>
+      </a>
+    </nav>
+    <div class="dash-sidebar-bottom">
+      <div class="dash-student-info">
+        <div class="dash-avatar" id="iv2-avatar">?</div>
+        <div>
+          <div class="dash-student-name" id="iv2-name">Coding Interview</div>
+          <div class="dash-student-score" id="iv2-score-label">AI Proctored Session</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─── Main content ──────────────────────────────────────── -->
+  <div class="iv2-main">
+
+    <!-- ── Product sub-tab switcher (always visible) ── -->
+    <div id="product-tabs">
+      <button id="tab-oa" class="product-tab active" onclick="switchProduct('oa')">
+        <span class="tab-icon">💻</span> Mock OA
+      </button>
+      <button id="tab-mi" class="product-tab" onclick="switchProduct('mi')">
+        <span class="tab-icon">🎙️</span> Mock Interview
+      </button>
+    </div>
+
+    <!-- ═══ PRODUCT OA — existing IDE + proctoring ═══ -->
+    <div id="product-oa">
+
+    <!-- ═══════════════════════════════════════════
+         CONFIG SCREEN — shown before session
+         ═══════════════════════════════════════════ -->
+    <div id="iv2-config">
+      <div class="config-card">
+        <h1 class="config-title">Start Coding Interview</h1>
+        <p class="config-sub">AI-proctored session · Real questions · Live face &amp; phone detection</p>
+
+        <span class="config-label">Domain</span>
+        <div class="pill-group" id="cfg-domain">
+          <button class="pill-btn active" data-domain="dsa">DSA / Algorithms</button>
+          <button class="pill-btn" data-domain="sql">SQL</button>
+          <button class="pill-btn" data-domain="ml">Machine Learning</button>
+          <button class="pill-btn" data-domain="react">React / Web</button>
+        </div>
+        <div id="cfg-source-badge" class="source-badge lc" style="margin-top:10px;">
+          📙 Questions from LeetCode
+        </div>
+
+        <span class="config-label">Difficulty</span>
+        <div class="pill-group" id="cfg-diff">
+          <button class="pill-btn active" data-diff="medium">Medium</button>
+          <button class="pill-btn" data-diff="hard">Hard</button>
+        </div>
+        <p style="font-size:11px;color:var(--muted);margin-top:6px;">Easy questions are disabled — NEXUS targets interview-level difficulty only.</p>
+
+        <span class="config-label">Number of Questions</span>
+        <div class="pill-group" id="cfg-count">
+          <button class="pill-btn" data-count="1">1</button>
+          <button class="pill-btn active" data-count="2">2</button>
+          <button class="pill-btn" data-count="3">3</button>
+          <button class="pill-btn" data-count="5">5</button>
+        </div>
+
+        <span class="config-label">Time Limit</span>
+        <div class="pill-group" id="cfg-time">
+          <button class="pill-btn" data-mins="20">20 min</button>
+          <button class="pill-btn active" data-mins="30">30 min</button>
+          <button class="pill-btn" data-mins="45">45 min</button>
+        </div>
+
+        <div class="proctor-notice">
+          <strong>⚠️ AI Proctoring is active during this session.</strong>
+          Tab switching, phone usage, and face detection violations will be logged and impact your score. Random screenshots will be taken silently during the session.
+        </div>
+
+        <button class="iv2-start-btn" id="cfg-start-btn">📷 Enable Camera &amp; Start →</button>
+        <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px;">Your camera is used only for proctoring. No video is recorded or stored.</p>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         SESSION — 3-column interview layout
+         ═══════════════════════════════════════════ -->
+    <div id="iv2-session" style="display:none;">
+
+      <!-- 3-column split -->
+      <div class="iv2-three-col">
+
+        <!-- ─── PANEL 1: Question ───────────────── -->
+        <div class="iv2-q-panel">
+          <div class="iv2-q-header">
+            <span class="iv2-q-title" id="q-title">Loading…</span>
+            <span class="source-pill lc" id="q-source-pill">LeetCode · Medium</span>
+          </div>
+          <div class="iv2-q-content" id="q-content">
+            <!-- Loading shimmer -->
+            <div class="loading-shimmer" style="width:60%;height:18px;"></div>
+            <div class="loading-shimmer" style="width:100%;margin-top:16px;"></div>
+            <div class="loading-shimmer" style="width:95%;"></div>
+            <div class="loading-shimmer" style="width:88%;"></div>
+            <div class="loading-shimmer" style="width:70%;margin-top:16px;"></div>
+          </div>
+          <div class="iv2-q-footer">
+            <div class="q-progress-label">Question <span id="q-num">1</span> of <span id="q-total">2</span></div>
+            <div class="q-dots" id="q-dots"></div>
+            <div class="q-nav">
+              <button class="q-nav-btn" id="q-prev-btn" onclick="prevQuestion()" disabled>← Prev</button>
+              <button class="q-nav-btn" id="q-next-btn" onclick="nextQuestion()">Next →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── PANEL 2: Code IDE ──────────────── -->
+        <div class="iv2-ide-panel">
+          <!-- IDE top bar -->
+          <div class="iv2-ide-topbar">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <select class="lang-select" id="ide-lang-select" onchange="switchLanguage(this.value)">
+                <option value="python3">Python 3</option>
+                <option value="javascript">JavaScript</option>
+                <option value="java">Java</option>
+                <option value="cpp">C++</option>
+                <option value="c">C</option>
+                <option value="typescript">TypeScript</option>
+                <option value="golang">Go</option>
+              </select>
+            </div>
+            <div class="ide-topbar-actions">
+              <button class="ide-action-btn" onclick="resetCode()">↺ Reset</button>
+              <button class="ide-action-btn" onclick="copyCode()">⎘ Copy</button>
+            </div>
+          </div>
+          <!-- Monaco Editor -->
+          <div class="iv2-editor-wrap">
+            <div id="monaco-editor"></div>
+          </div>
+          <!-- Output panel -->
+          <div class="iv2-output-panel">
+            <div class="output-tabs">
+              <div class="output-tab active" onclick="switchOutputTab('cases', this)">Test Cases</div>
+              <div class="output-tab" onclick="switchOutputTab('output', this)">Output</div>
+              <div class="output-tab" onclick="switchOutputTab('verdict', this)">Verdict</div>
+            </div>
+            <div class="output-content" id="output-content">
+              <div id="tab-cases"></div>
+              <div id="tab-output" style="display:none;"></div>
+              <div id="tab-verdict" style="display:none;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── PANEL 3: AI Proctor ────────────── -->
+        <div class="iv2-proctor-panel">
+
+          <!-- Camera feed -->
+          <div class="proctor-section">
+            <div class="proctor-section-label">
+              VIDEO FEED
+              <span id="proctor-ai-label" style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;background:#DCFCE7;color:#166534;">● AI ACTIVE</span>
+            </div>
+            <div class="proctor-cam-wrap" id="proctor-cam-wrap">
+              <video id="proctor-video" autoplay playsinline></video>
+              <div class="cam-overlay">
+                <div class="cam-rec"><div class="cam-rec-dot"></div>REC</div>
+                <div class="cam-ai-badge">AI Proctor Active</div>
+              </div>
+              <div id="iv-face-warning" style="display:none;position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(244,67,54,.9);color:#fff;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap;">⚠ Face not detected</div>
+            </div>
+          </div>
+
+          <!-- Proctor status -->
+          <div class="proctor-section">
+            <div class="proctor-section-label">PROCTOR STATUS</div>
+            <div class="proctor-status-main safe" id="proctor-status-main">✓ SAFE</div>
+
+            <!-- Face detected -->
+            <div class="proctor-row">
+              <div class="proctor-row-header">
+                <span class="proctor-row-label">Face Detected</span>
+                <span class="proctor-row-badge badge-ok" id="pr-face-badge">✓ Yes 96%</span>
+              </div>
+              <div class="proctor-bar"><div class="proctor-bar-fill bar-ok" id="pr-face-bar" style="width:96%;"></div></div>
+            </div>
+
+            <!-- Eyes on screen -->
+            <div class="proctor-row">
+              <div class="proctor-row-header">
+                <span class="proctor-row-label">Eyes on Screen</span>
+                <span class="proctor-row-badge badge-ok" id="pr-eyes-badge">✓ Yes 91%</span>
+              </div>
+              <div class="proctor-bar"><div class="proctor-bar-fill bar-ok" id="pr-eyes-bar" style="width:91%;"></div></div>
+            </div>
+
+            <!-- One person -->
+            <div class="proctor-row">
+              <div class="proctor-row-header">
+                <span class="proctor-row-label">One Person</span>
+                <span class="proctor-row-badge badge-ok" id="pr-person-badge">✓ Yes 99%</span>
+              </div>
+              <div class="proctor-bar"><div class="proctor-bar-fill bar-ok" id="pr-person-bar" style="width:99%;"></div></div>
+            </div>
+
+            <!-- Phone detected -->
+            <div class="proctor-row">
+              <div class="proctor-row-header">
+                <span class="proctor-row-label">Phone Detected</span>
+                <span class="proctor-row-badge badge-ok" id="pr-phone-badge">✗ No</span>
+              </div>
+              <div class="proctor-bar"><div class="proctor-bar-fill bar-ok" id="pr-phone-bar" style="width:5%;"></div></div>
+            </div>
+
+            <!-- Tab focus -->
+            <div class="proctor-row">
+              <div class="proctor-row-header">
+                <span class="proctor-row-label">Tab Focus</span>
+                <span class="proctor-row-badge badge-ok" id="pr-tab-badge">✓ Active</span>
+              </div>
+              <div class="proctor-bar"><div class="proctor-bar-fill bar-ok" id="pr-tab-bar" style="width:100%;"></div></div>
+            </div>
+          </div>
+
+          <!-- Violation log -->
+          <div class="proctor-section" style="border-bottom:none;flex:1;display:flex;flex-direction:column;">
+            <div class="proctor-section-label" style="margin-bottom:8px;">
+              VIOLATION LOG
+              <span id="viol-count-badge" style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:#F1F5F9;color:var(--muted);">0</span>
+            </div>
+            <div class="violation-log" id="violation-log">
+              <div class="violation-empty" id="viol-empty">No violations detected</div>
+            </div>
+
+            <!-- Snapshot tracker -->
+            <div style="padding:10px 0;border-top:1px solid var(--border);margin-top:8px;">
+              <div class="proctor-section-label" style="margin-bottom:8px;">📸 RANDOM SNAPSHOTS</div>
+              <div class="snapshot-info">
+                <div><span style="color:var(--muted);">Next capture:</span><span id="snap-next">~5 min</span></div>
+                <div><span style="color:var(--muted);">Captured:</span><span id="snap-count">0</span></div>
+                <div><span style="color:var(--muted);">Last:</span><span id="snap-last">—</span></div>
+                <div><span style="color:var(--muted);">Status:</span><span id="snap-status" style="color:var(--green);font-weight:600;">✓ Clean</span></div>
+              </div>
+              <div style="font-size:11px;color:var(--muted);margin-top:6px;">Captures are silent and random (3–8 min intervals).</div>
+            </div>
+          </div>
+
+        </div><!-- end proctor panel -->
+      </div><!-- end three-col -->
+
+      <!-- ─── Bottom Action Bar ──────────────── -->
+      <div class="iv2-bottom-bar">
+        <select class="bottom-lang-select" id="bottom-lang-select" onchange="switchLanguage(this.value)">
+          <option value="python3">Python 3</option>
+          <option value="javascript">JavaScript</option>
+          <option value="java">Java</option>
+          <option value="cpp">C++</option>
+          <option value="c">C</option>
+          <option value="typescript">TypeScript</option>
+          <option value="golang">Go</option>
+        </select>
+        <div class="bottom-divider"></div>
+        <button class="bottom-btn btn-run" id="run-btn" onclick="runCode()">▶ Run Code</button>
+        <button class="bottom-btn btn-submit" id="submit-btn" onclick="submitCode()">⬆ Submit</button>
+        <div class="bottom-spacer"></div>
+        <div class="bottom-timer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="bottom-timer-text">30:00</span>
+        </div>
+        <div class="bottom-divider"></div>
+        <button class="bottom-btn btn-end" onclick="confirmEndSession()">End Session</button>
+      </div>
+
+    </div><!-- end iv2-session -->
+
+    <!-- ═══════════════════════════════════════════
+         SESSION SUMMARY
+         ═══════════════════════════════════════════ -->
+    <div id="iv2-summary" style="display:none;">
+      <div class="summary-inner">
+        <h1 class="summary-title">Session Complete</h1>
+        <p class="summary-sub" id="sum-sub">Here's a breakdown of your performance.</p>
+
+        <div class="summary-grid">
+          <!-- Score card -->
+          <div class="summary-card">
+            <h3>Score Impact</h3>
+            <div class="summary-score-big green" id="sum-score-delta">+5 pts</div>
+            <div style="margin-top:12px;">
+              <div class="summary-stat"><span>Questions Attempted</span><strong id="sum-attempted">0 / 0</strong></div>
+              <div class="summary-stat"><span>Accepted</span><strong id="sum-accepted" style="color:var(--green);">0</strong></div>
+              <div class="summary-stat"><span>Wrong Answer</span><strong id="sum-wrong" style="color:var(--red);">0</strong></div>
+            </div>
+          </div>
+          <!-- Proctor card -->
+          <div class="summary-card">
+            <h3>Proctoring Result</h3>
+            <div class="summary-score-big" id="sum-proctor-result" style="color:var(--green);">✓ CLEAN</div>
+            <div style="margin-top:12px;">
+              <div class="summary-stat"><span>Violations</span><strong id="sum-violations">0</strong></div>
+              <div class="summary-stat"><span>Score Penalty</span><strong id="sum-penalty" style="color:var(--red);">−0 pts</strong></div>
+              <div class="summary-stat"><span>Snapshots Taken</span><strong id="sum-snaps">0</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Snapshot grid -->
+        <div class="summary-card" style="margin-bottom:16px;" id="sum-snap-card">
+          <h3 style="margin-bottom:12px;">SESSION SNAPSHOT REPORT</h3>
+          <div class="snapshot-grid" id="sum-snap-grid">
+            <div style="font-size:12px;color:var(--muted);grid-column:1/-1;">No snapshots taken yet.</div>
+          </div>
+        </div>
+
+        <!-- Question table -->
+        <div class="summary-table" style="margin-bottom:16px;">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Question</th><th>Difficulty</th><th>Source</th><th>Result</th><th>Time Taken</th>
+            </tr></thead>
+            <tbody id="sum-q-table"></tbody>
+          </table>
+        </div>
+
+        <!-- CTAs -->
+        <div class="summary-ctas">
+          <button class="cta-btn cta-primary" onclick="retrySession()">Try Again</button>
+          <a href="dashboard.html" class="cta-btn cta-secondary">Back to Dashboard</a>
+        </div>
+      </div>
+    </div><!-- end iv2-summary -->
+
+    </div><!-- end #product-oa -->
+
+    <!-- ═══════════════════════════════════════════════════════
+         PRODUCT MI — Mock Interview (Conversational AI)
+         ═══════════════════════════════════════════════════════ -->
+    <div id="product-mi" style="display:none;width:100%;height:100%;">
+
+      <!-- ── MI Config Screen ── -->
+      <div id="mi-config" style="display:flex;align-items:center;justify-content:center;min-height:100%;padding:40px 20px;">
+        <div class="config-card" style="max-width:520px;">
+          <h1 class="config-title">Mock Interview</h1>
+          <p class="config-sub">Conversational AI interview · Claude-powered · Role-specific tracks · Live proctoring</p>
+
+          <span class="config-label">Role</span>
+          <div class="pill-group" id="mi-cfg-role">
+            <button class="pill-btn active" data-role="sde">SDE</button>
+            <button class="pill-btn" data-role="ml">ML Engineer</button>
+            <button class="pill-btn" data-role="analyst">Data Analyst</button>
+            <button class="pill-btn" data-role="frontend">Frontend</button>
+            <button class="pill-btn" data-role="devops">DevOps</button>
+          </div>
+
+          <span class="config-label" style="margin-top:16px;">Experience Level</span>
+          <div class="pill-group" id="mi-cfg-exp">
+            <button class="pill-btn active" data-exp="fresher">Fresher</button>
+            <button class="pill-btn" data-exp="1-2yrs">1–2 yrs</button>
+            <button class="pill-btn" data-exp="3+yrs">3+ yrs</button>
+          </div>
+
+          <span class="config-label" style="margin-top:16px;">Duration</span>
+          <div class="pill-group" id="mi-cfg-dur">
+            <button class="pill-btn" data-dur="30">30 min</button>
+            <button class="pill-btn active" data-dur="45">45 min</button>
+            <button class="pill-btn" data-dur="60">60 min</button>
+          </div>
+
+          <div class="proctor-notice" style="margin-top:20px;">
+            <strong>⚠️ AI Proctoring is active during this session.</strong>
+            Tab switching, phone usage, and face detection violations will be logged and may impact your score.
+          </div>
+
+          <button class="mi-start-btn" id="mi-start-btn" onclick="miStartSession()">📷 Enable Camera &amp; Start Interview →</button>
+          <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px;">Your camera is used only for proctoring. No video is recorded or stored.</p>
+        </div>
+      </div>
+
+      <!-- ── MI Session Screen ── -->
+      <div id="mi-session" style="display:none;flex-direction:column;height:100%;">
+        <div class="iv2-three-col" style="flex:1;overflow:hidden;">
+
+          <!-- ─── Panel 1: Stage Tracker + Context ─── -->
+          <div class="iv2-q-panel" style="display:flex;flex-direction:column;gap:0;padding:0;">
+            <div style="padding:16px;border-bottom:1px solid var(--border);">
+              <div style="font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--muted);margin-bottom:10px;">INTERVIEW PROGRESS</div>
+              <div id="mi-stage-tracker" style="display:flex;flex-direction:column;gap:8px;"></div>
+            </div>
+            <div style="padding:16px;border-bottom:1px solid var(--border);">
+              <div style="font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--muted);margin-bottom:8px;">SESSION TIME</div>
+              <div style="font-size:22px;font-weight:700;color:var(--navy);font-family:'JetBrains Mono',monospace;" id="mi-timer-display">00:00</div>
+              <div style="height:4px;background:#F1F5F9;border-radius:2px;margin-top:8px;">
+                <div id="mi-timer-bar" style="height:4px;background:var(--navy);border-radius:2px;width:0%;transition:width 1s linear;"></div>
+              </div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="mi-timer-label">of 45 min</div>
+            </div>
+            <div style="padding:16px;flex:1;">
+              <div style="font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--muted);margin-bottom:8px;">CURRENT STAGE</div>
+              <div id="mi-stage-label" style="font-size:13px;font-weight:700;color:var(--navy);">Warm-up</div>
+              <div id="mi-stage-desc" style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5;">Getting started — tell us about yourself.</div>
+            </div>
+          </div>
+
+          <!-- ─── Panel 2: Conversation Area ─── -->
+          <div class="iv2-ide-panel" style="display:flex;flex-direction:column;background:#FAFBFC;">
+            <!-- Transcript -->
+            <div id="mi-transcript" style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;"></div>
+
+            <!-- Interim STT text -->
+            <div id="mi-interim-wrap" style="padding:0 20px 8px;min-height:32px;">
+              <span id="mi-interim-text" style="font-size:12px;color:var(--muted);font-style:italic;"></span>
+            </div>
+
+            <!-- Code scratchpad (collapsible) -->
+            <div id="mi-scratchpad" style="display:none;border-top:1px solid var(--border);">
+              <div style="padding:8px 16px;background:#F7F8FA;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:11px;font-weight:700;color:var(--muted);">CODE SCRATCHPAD</span>
+                <button onclick="miToggleScratchpad()" style="font-size:11px;background:none;border:none;cursor:pointer;color:var(--muted);">✕ Close</button>
+              </div>
+              <div id="mi-monaco" style="height:180px;"></div>
+            </div>
+
+            <!-- Voice controls bar -->
+            <div style="padding:12px 16px;border-top:1px solid var(--border);background:#fff;display:flex;align-items:center;gap:12px;">
+              <button id="mi-mic-btn" class="mi-mic-btn" onclick="miToggleListening()" title="Hold to speak">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
+                <span id="mi-mic-label">🎤 Click to Speak</span>
+              </button>
+              <button onclick="miToggleScratchpad()" style="padding:8px 14px;border:1px solid var(--border);border-radius:6px;background:#fff;font-size:11px;cursor:pointer;color:var(--muted);font-family:inherit;">
+                &lt;/&gt; Code Scratchpad
+              </button>
+              <div style="flex:1;"></div>
+              <button id="mi-mute-btn" onclick="miToggleMute()" style="padding:8px 14px;border:1px solid var(--border);border-radius:6px;background:#fff;font-size:11px;cursor:pointer;color:var(--muted);font-family:inherit;" title="Toggle interviewer voice">
+                🔊 Voice On
+              </button>
+              <div style="padding:6px 14px;background:var(--navy);color:#fff;border-radius:6px;font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace;" id="mi-bottom-timer">45:00</div>
+              <button onclick="miConfirmEnd()" style="padding:8px 14px;border:1px solid #F44336;border-radius:6px;background:#fff;font-size:11px;cursor:pointer;color:#F44336;font-family:inherit;">End Interview</button>
+            </div>
+          </div>
+
+          <!-- ─── Panel 3: Proctor Panel (reused) ─── -->
+          <div class="iv2-proctor-panel">
+            <div class="proctor-section">
+              <div class="proctor-section-label">
+                VIDEO FEED
+                <span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;background:#DCFCE7;color:#166534;">● AI ACTIVE</span>
+              </div>
+              <div class="proctor-cam-wrap" id="mi-proctor-cam-wrap">
+                <video id="mi-proctor-video" autoplay playsinline></video>
+                <div class="cam-overlay">
+                  <div class="cam-rec"><div class="cam-rec-dot"></div>REC</div>
+                  <div class="cam-ai-badge">AI Proctor Active</div>
+                </div>
+              </div>
+            </div>
+            <div class="proctor-section">
+              <div class="proctor-section-label">PROCTOR STATUS</div>
+              <div class="proctor-status-main safe" id="mi-proctor-status-main">✓ SAFE</div>
+              <div class="proctor-row">
+                <div class="proctor-row-header">
+                  <span class="proctor-row-label">Face Detected</span>
+                  <span class="proctor-row-badge badge-ok" id="mi-pr-face-badge">✓ Yes 96%</span>
+                </div>
+                <div class="proctor-bar"><div class="proctor-bar-fill bar-ok" id="mi-pr-face-bar" style="width:96%"></div></div>
+              </div>
+              <div class="proctor-row">
+                <div class="proctor-row-header">
+                  <span class="proctor-row-label">Phone Detected</span>
+                  <span class="proctor-row-badge badge-ok" id="mi-pr-phone-badge">✗ No</span>
+                </div>
+                <div class="proctor-bar"><div class="proctor-bar-fill bar-ok" id="mi-pr-phone-bar" style="width:5%"></div></div>
+              </div>
+              <div class="proctor-row">
+                <div class="proctor-row-header">
+                  <span class="proctor-row-label">Tab Focus</span>
+                  <span class="proctor-row-badge badge-ok" id="mi-pr-tab-badge">✓ Active</span>
+                </div>
+                <div class="proctor-bar"><div class="proctor-bar-fill bar-ok" id="mi-pr-tab-bar" style="width:100%"></div></div>
+              </div>
+            </div>
+            <div class="proctor-section" style="border-bottom:none;flex:1;">
+              <div class="proctor-section-label" style="margin-bottom:8px;">VIOLATION LOG
+                <span id="mi-viol-count" style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:#F1F5F9;color:var(--muted);">0</span>
+              </div>
+              <div class="violation-log" id="mi-violation-log">
+                <div class="violation-empty">No violations detected</div>
+              </div>
+            </div>
+          </div><!-- end MI proctor panel -->
+
+        </div><!-- end three-col -->
+      </div><!-- end mi-session -->
+
+      <!-- ── MI Summary Screen ── -->
+      <div id="mi-summary" style="display:none;overflow-y:auto;padding:32px;">
+        <div class="summary-inner" style="max-width:720px;margin:0 auto;">
+          <h1 class="summary-title">Interview Complete</h1>
+          <p class="summary-sub" id="mi-sum-sub">Here is your performance report.</p>
+
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;">
+            <span id="mi-sum-role-badge" style="padding:4px 14px;border-radius:20px;background:#EEF2FF;color:#4338CA;font-size:12px;font-weight:700;">SDE</span>
+            <span id="mi-sum-exp-badge" style="padding:4px 14px;border-radius:20px;background:#F0FDF4;color:#166534;font-size:12px;font-weight:700;">Fresher</span>
+            <span id="mi-sum-dur-badge" style="padding:4px 14px;border-radius:20px;background:#F8FAFC;color:var(--muted);font-size:12px;font-weight:700;">45 min</span>
+          </div>
+
+          <div class="summary-grid">
+            <div class="summary-card">
+              <h3>Overall Readiness</h3>
+              <div class="summary-score-big green" id="mi-sum-score" style="font-size:40px;">—</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:8px;">out of 100</div>
+            </div>
+            <div class="summary-card">
+              <h3>Proctoring</h3>
+              <div class="summary-score-big" id="mi-sum-proctor" style="color:var(--green);">✓ CLEAN</div>
+              <div style="margin-top:12px;">
+                <div class="summary-stat"><span>Violations</span><strong id="mi-sum-violations">0</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage breakdown -->
+          <div class="summary-card" style="margin-bottom:16px;">
+            <h3 style="margin-bottom:14px;">Stage Breakdown</h3>
+            <div id="mi-sum-stages" style="display:flex;flex-direction:column;gap:10px;"></div>
+          </div>
+
+          <!-- Claude's summary -->
+          <div class="summary-card" style="margin-bottom:16px;">
+            <h3 style="margin-bottom:10px;">Interviewer Feedback</h3>
+            <p id="mi-sum-feedback" style="font-size:13px;color:#374151;line-height:1.7;margin:0;">Generating feedback…</p>
+          </div>
+
+          <!-- CTAs -->
+          <div class="summary-ctas">
+            <button class="cta-btn cta-primary" onclick="miRetry()">Try Again</button>
+            <button class="cta-btn cta-secondary" onclick="miViewTranscript()">View Transcript</button>
+            <a href="dashboard.html" class="cta-btn cta-secondary">Back to Dashboard</a>
+          </div>
+
+          <!-- Transcript modal (hidden by default) -->
+          <div id="mi-transcript-modal" style="display:none;margin-top:20px;border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+            <div style="padding:12px 16px;background:#F8FAFC;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:var(--muted);">FULL TRANSCRIPT</span>
+              <button onclick="document.getElementById('mi-transcript-modal').style.display='none'" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;">✕</button>
+            </div>
+            <div id="mi-full-transcript" style="padding:16px;max-height:400px;overflow-y:auto;font-size:12px;line-height:1.8;color:#374151;"></div>
+          </div>
+
+        </div>
+      </div><!-- end mi-summary -->
+
+    </div><!-- end #product-mi -->
+
+  </div><!-- end iv2-main -->
+</div><!-- end iv2-page -->
+
+<!-- ═══════════════════════════════════════════
+     TAB SWAP OVERLAY
+     ═══════════════════════════════════════════ -->
+<div id="iv2-tabswap-overlay" style="display:none;">
+  <div class="tabswap-card">
+    <span class="tabswap-icon">⚠️</span>
+    <h2 class="tabswap-title">TAB SWITCH DETECTED</h2>
+    <p class="tabswap-desc">Leaving the interview window is not permitted.<br>This incident has been logged with a timestamp.</p>
+    <div class="tabswap-divider"></div>
+    <div class="tabswap-violation" id="tabswap-count-text">Violation #1 of 3 — 3 violations = session terminated</div>
+    <button class="tabswap-return" onclick="returnToInterview()">Return to Interview</button>
+    <p class="tabswap-paused">Session paused. Timer frozen.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PHONE DETECTION BANNER
+     ═══════════════════════════════════════════ -->
+<div id="iv2-phone-banner">
+  <span>🔴</span>
+  <span>PHONE DETECTED — Put away your device to continue. This has been logged.</span>
+</div>
+
+<script src="interview.js"></script>
+<script src="mock-interview.js"></script>
+</body>
+</html>

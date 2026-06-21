@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up — NEXUS</title>
+  <meta name="description" content="Create your NEXUS account — free for students. Join the employability intelligence platform.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+
+<div class="auth-layout">
+
+  <!-- ─── LEFT PANEL ─────────────────────────────────────────── -->
+  <div class="auth-left" aria-hidden="true">
+
+    <div class="auth-left-logo">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+        <polygon points="12,2 22,7.5 22,16.5 12,22 2,16.5 2,7.5" fill="white" opacity="0.15"/>
+        <polygon points="12,2 22,7.5 22,16.5 12,22 2,16.5 2,7.5" fill="none" stroke="white" stroke-width="1.2"/>
+        <polygon points="12,6 18,9.5 18,14.5 12,18 6,14.5 6,9.5" fill="#1A1A2E"/>
+        <circle cx="12" cy="12" r="2.8" fill="#4CAF50"/>
+      </svg>
+      NEXUS
+    </div>
+
+    <div class="auth-quote-wrap">
+      <div class="auth-quote" id="auth-quote-text">
+        "3 students from your batch just cleared their mock interviews."
+      </div>
+      <div class="auth-quote-dots" id="auth-quote-dots">
+        <div class="auth-quote-dot"></div>
+        <div class="auth-quote-dot active"></div>
+        <div class="auth-quote-dot"></div>
+      </div>
+    </div>
+
+    <div class="auth-trust">Trusted by students across 12+ engineering colleges</div>
+  </div>
+
+  <!-- ─── RIGHT PANEL ────────────────────────────────────────── -->
+  <div class="auth-right">
+    <div class="auth-form-wrap">
+
+      <h1 class="auth-heading">Create your account</h1>
+      <p class="auth-sub">Join NEXUS — free for students</p>
+
+      <!-- Role tabs -->
+      <div class="role-tabs" role="tablist" aria-label="Select your role">
+        <button class="role-tab active" role="tab" aria-selected="true"  id="su-tab-student"    data-role="student">Student</button>
+        <button class="role-tab"        role="tab" aria-selected="false" id="su-tab-tpo"         data-role="tpo">College TPO</button>
+        <button class="role-tab"        role="tab" aria-selected="false" id="su-tab-recruiter"   data-role="recruiter">Recruiter</button>
+        <button class="role-tab"        role="tab" aria-selected="false" id="su-tab-mentor"      data-role="mentor">Mentor</button>
+      </div>
+
+      <form id="signup-form" novalidate>
+
+        <!-- ─── STUDENT FIELDS ─────────────────────────────── -->
+        <div class="role-fields active" id="fields-student">
+
+          <div class="form-group">
+            <label class="form-label" for="su-name">Full Name</label>
+            <input class="form-input" type="text" id="su-name" name="name" placeholder="Your full name" autocomplete="name">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="su-email">Email address</label>
+            <input class="form-input" type="email" id="su-email" name="email" placeholder="you@college.edu" autocomplete="email">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="su-college">College Name</label>
+            <div class="autocomplete-wrap">
+              <input class="form-input" type="text" id="su-college" name="college"
+                     placeholder="Type your college name..." autocomplete="off">
+              <div class="autocomplete-dropdown" id="college-dropdown">
+                <div class="autocomplete-item" data-value="IIT Bombay">IIT Bombay</div>
+                <div class="autocomplete-item" data-value="IIIT Hyderabad">IIIT Hyderabad</div>
+                <div class="autocomplete-item" data-value="NIT Trichy">NIT Trichy</div>
+                <div class="autocomplete-item" data-value="VIT Vellore">VIT Vellore</div>
+                <div class="autocomplete-item" data-value="Manipal Institute of Technology">Manipal Institute of Technology</div>
+                <div class="autocomplete-item" data-value="IIIT Kota">IIIT Kota</div>
+                <div class="autocomplete-item" data-value="SRM Institute of Science and Technology">SRM Institute of Science and Technology</div>
+                <div class="autocomplete-item" data-value="PES University">PES University</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="su-branch">Branch</label>
+            <select class="form-input select-input" id="su-branch" name="branch">
+              <option value="" disabled selected>Select your branch</option>
+              <option>CSE</option>
+              <option>ECE</option>
+              <option>ME</option>
+              <option>EE</option>
+              <option>Civil</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="su-year">Year of Study</label>
+            <select class="form-input select-input" id="su-year" name="year">
+              <option value="" disabled selected>Select year</option>
+              <option>1st Year</option>
+              <option>2nd Year</option>
+              <option>3rd Year</option>
+              <option>4th Year</option>
+              <option>Final Year</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="su-password">Password</label>
+            <div class="input-wrap">
+              <input class="form-input has-right" type="password" id="su-password" name="password"
+                     placeholder="Create a password" autocomplete="new-password">
+              <button type="button" class="eye-toggle" id="eye-signup" aria-label="Toggle password visibility">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="su-confirm">Confirm Password</label>
+            <input class="form-input" type="password" id="su-confirm" name="confirm"
+                   placeholder="Re-enter your password" autocomplete="new-password">
+          </div>
+
+        </div>
+        <!-- END student fields -->
+
+        <!-- ─── COLLEGE TPO FIELDS ─────────────────────────── -->
+        <div class="role-fields" id="fields-tpo">
+
+          <div class="form-group">
+            <label class="form-label" for="tpo-college">College Name</label>
+            <input class="form-input" type="text" id="tpo-college" name="tpo_college" placeholder="e.g. NIT Trichy">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="tpo-dept">Department</label>
+            <input class="form-input" type="text" id="tpo-dept" name="department" placeholder="e.g. Training and Placement Office">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="tpo-empid">Employee ID</label>
+            <input class="form-input" type="text" id="tpo-empid" name="employee_id" placeholder="Your institutional employee ID">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="tpo-email">Official Email</label>
+            <input class="form-input" type="email" id="tpo-email" name="official_email" placeholder="tpo@college.ac.in">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="tpo-password">Password</label>
+            <input class="form-input" type="password" id="tpo-password" name="password" placeholder="Create a password">
+          </div>
+
+        </div>
+        <!-- END TPO fields -->
+
+        <!-- ─── RECRUITER FIELDS ────────────────────────────── -->
+        <div class="role-fields" id="fields-recruiter">
+
+          <div class="form-group">
+            <label class="form-label" for="rec-company">Company Name</label>
+            <input class="form-input" type="text" id="rec-company" name="company" placeholder="e.g. Razorpay">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="rec-designation">Designation</label>
+            <input class="form-input" type="text" id="rec-designation" name="designation" placeholder="e.g. Technical Recruiter">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="rec-email">Work Email</label>
+            <input class="form-input" type="email" id="rec-email" name="work_email" placeholder="you@company.com">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="rec-linkedin">LinkedIn URL</label>
+            <input class="form-input" type="url" id="rec-linkedin" name="linkedin" placeholder="https://linkedin.com/in/...">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="rec-password">Password</label>
+            <input class="form-input" type="password" id="rec-password" name="password" placeholder="Create a password">
+          </div>
+
+        </div>
+        <!-- END recruiter fields -->
+
+        <!-- ─── MENTOR FIELDS ───────────────────────────────── -->
+        <div class="role-fields" id="fields-mentor">
+
+          <div class="form-group">
+            <label class="form-label" for="men-name">Full Name</label>
+            <input class="form-input" type="text" id="men-name" name="name" placeholder="Your full name">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="men-role">Current Role</label>
+            <input class="form-input" type="text" id="men-role" name="role" placeholder="e.g. SDE-2">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="men-company">Company</label>
+            <input class="form-input" type="text" id="men-company" name="company" placeholder="e.g. Flipkart">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Domain Expertise</label>
+            <div class="domain-select-chips" id="domain-chips" role="group" aria-label="Select your domain expertise">
+              <button type="button" class="chip-toggle" data-domain="DSA">DSA</button>
+              <button type="button" class="chip-toggle" data-domain="System Design">System Design</button>
+              <button type="button" class="chip-toggle" data-domain="ML">ML</button>
+              <button type="button" class="chip-toggle" data-domain="Frontend">Frontend</button>
+              <button type="button" class="chip-toggle" data-domain="Backend">Backend</button>
+              <button type="button" class="chip-toggle" data-domain="DevOps">DevOps</button>
+              <button type="button" class="chip-toggle" data-domain="Blockchain">Blockchain</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="men-email">Email</label>
+            <input class="form-input" type="email" id="men-email" name="email" placeholder="you@company.com">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="men-password">Password</label>
+            <input class="form-input" type="password" id="men-password" name="password" placeholder="Create a password">
+          </div>
+
+        </div>
+        <!-- END mentor fields -->
+
+        <button type="submit" class="auth-submit" id="signup-submit">Create Account →</button>
+
+        <p class="auth-terms">
+          By signing up you agree to our
+          <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+        </p>
+
+      </form>
+
+      <p class="auth-switch">Already have an account? <a href="login.html" id="switch-to-login">Log in</a></p>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="login.js"></script>
+</body>
+</html>

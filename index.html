@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS — The Operating System for Student Employability</title>
+  <meta name="description" content="NEXUS is an ML-powered student employability platform — dynamic scoring, AI mock interviews, blockchain credentials, and real-time TPO analytics. Built as a Final Year B.Tech project at IIIT Kota.">
+  <meta name="keywords" content="student employability, ML score, mock interview, blockchain credentials, placement, IIIT Kota">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+
+  <!-- ─── NAVBAR ─────────────────────────────────────────────── -->
+  <nav class="navbar" id="navbar" role="navigation" aria-label="Main navigation">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo" id="nav-logo" aria-label="NEXUS home">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <polygon points="12,2 22,7.5 22,16.5 12,22 2,16.5 2,7.5" fill="#1A1A2E"/>
+          <polygon points="12,6 18,9.5 18,14.5 12,18 6,14.5 6,9.5" fill="white"/>
+          <circle cx="12" cy="12" r="2.8" fill="#4CAF50"/>
+        </svg>
+        NEXUS
+      </a>
+      <ul class="nav-links" role="list">
+        <li><a href="#features"   id="nav-features">Features</a></li>
+        <li><a href="dashboard.html" id="nav-dashboard">Dashboard</a></li>
+        <li><a href="#tech-stack" id="nav-techstack">Tech Stack</a></li>
+        <li><a href="#about"      id="nav-about">About</a></li>
+        <li><a href="login.html"  id="nav-login">Log In</a></li>
+      </ul>
+      <a href="signup.html" class="btn btn-primary btn-sm" id="nav-cta">Get Started →</a>
+    </div>
+  </nav>
+
+  <!-- ─── HERO ───────────────────────────────────────────────── -->
+  <section class="hero" id="hero" aria-labelledby="hero-headline">
+    <div class="container hero-inner">
+
+      <div class="hero-text">
+        <div class="eyebrow-pill" id="hero-eyebrow">Final Year B.Tech Project · IIIT Kota 2026</div>
+
+        <h1 class="hero-headline" id="hero-headline">
+          The Operating System<br>for Student Employability
+        </h1>
+
+        <p class="hero-sub">
+          Indian students don't lack talent. They lack signal. NEXUS fixes this — with ML at the core and real-time data for students, colleges, and recruiters.
+        </p>
+
+        <div class="hero-buttons">
+          <a href="signup.html" class="btn btn-primary" id="hero-primary-cta">Get Started →</a>
+          <a href="login.html"  class="btn btn-outline" id="hero-login-cta">Log In</a>
+          <a href="dashboard.html" class="btn btn-outline" id="hero-demo-cta" style="font-size:13px;opacity:0.7;">View Demo →</a>
+          <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="btn btn-outline" id="hero-github-cta">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            View on GitHub
+          </a>
+        </div>
+
+        <div class="hero-stats" aria-label="Key features at a glance">
+          <span class="stat-pill">📊 Dynamic ML Score</span>
+          <span class="stat-pill">🎙️ AI Mock Interviews</span>
+          <span class="stat-pill">⛓️ Blockchain Credentials</span>
+        </div>
+      </div>
+
+      <!-- Browser frame mockup -->
+      <div class="hero-visual" aria-hidden="true">
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <div class="address-bar">nexus.app/dashboard</div>
+          </div>
+          <div class="browser-content">
+            <!-- Mini sidebar -->
+            <div class="mini-sidebar">
+              <div class="mini-logo-box"></div>
+              <div class="mini-nav-dot active"></div>
+              <div class="mini-nav-dot"></div>
+              <div class="mini-nav-dot"></div>
+              <div class="mini-nav-dot"></div>
+              <div class="mini-nav-dot"></div>
+            </div>
+            <!-- Mini main -->
+            <div class="mini-main">
+              <div class="mini-welcome">Welcome back, Tanishq 👋</div>
+              <div class="mini-cards">
+                <div class="mini-card">
+                  <div class="mini-card-num green">68</div>
+                  <div class="mini-card-label">ML Score</div>
+                </div>
+                <div class="mini-card">
+                  <div class="mini-card-num">12</div>
+                  <div class="mini-card-label">Interviews</div>
+                </div>
+                <div class="mini-card">
+                  <div class="mini-card-num">7</div>
+                  <div class="mini-card-label">Creds</div>
+                </div>
+              </div>
+              <div class="mini-gauge-row">
+                <!-- Mini gauge SVG — score 68/100 -->
+                <!-- cx=50, cy=60, r=45 -->
+                <!-- Score 68: θ=57.6°, x=50+45×0.536=74.1, y=60-45×0.844=22 -->
+                <!-- Needle: rotate(32.4°) at (50,60) -->
+                <svg viewBox="0 0 100 70" width="100" height="70" aria-label="Score gauge 68/100">
+                  <path d="M 5,60 A 45,45 0 0,1 95,60" fill="none" stroke="#E0E0E0" stroke-width="7" stroke-linecap="round"/>
+                  <path d="M 5,60 A 45,45 0 0,1 74,22" fill="none" stroke="#4CAF50" stroke-width="7" stroke-linecap="round"/>
+                  <g transform="translate(50,60) rotate(32.4)">
+                    <line x1="0" y1="-2" x2="0" y2="-35" stroke="#1A1A2E" stroke-width="1.5" stroke-linecap="round"/>
+                    <circle cx="0" cy="0" r="3" fill="#1A1A2E"/>
+                    <circle cx="0" cy="0" r="1.5" fill="white"/>
+                  </g>
+                  <text x="50" y="51" text-anchor="middle" font-size="14" font-weight="700" fill="#1A1A2E" font-family="Inter,sans-serif">68</text>
+                  <text x="50" y="62" text-anchor="middle" font-size="6.5" fill="#9E9E9E" font-family="Inter,sans-serif">/100</text>
+                </svg>
+                <!-- Mini bar chart -->
+                <div class="mini-chart-placeholder">
+                  <div class="chart-bar" style="height:52%"></div>
+                  <div class="chart-bar" style="height:58%"></div>
+                  <div class="chart-bar" style="height:66%"></div>
+                  <div class="chart-bar" style="height:72%"></div>
+                  <div class="chart-bar" style="height:76%"></div>
+                  <div class="chart-bar" style="height:83%"></div>
+                  <div class="chart-bar" style="height:89%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── PROBLEM ────────────────────────────────────────────── -->
+  <section class="section" id="problem" aria-labelledby="problem-label">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="section-label" id="problem-label">The Problem</span>
+      </div>
+
+      <div class="problem-grid" id="problem-grid">
+        <div class="problem-card">
+          <div class="problem-icon" aria-hidden="true">👨‍🎓</div>
+          <div class="problem-num" id="count-1" data-target="43" data-suffix="%">43%</div>
+          <p class="problem-desc">"Engineering graduates are unemployable by current market standards"</p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon" aria-hidden="true">🏢</div>
+          <div class="problem-num" id="count-2" data-target="6" data-suffix=" weeks">6 weeks</div>
+          <p class="problem-desc">"Average time recruiters spend finding one qualified candidate"</p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon" aria-hidden="true">📋</div>
+          <div class="problem-num" id="count-3" data-target="0" data-suffix="">0</div>
+          <p class="problem-desc">"Colleges with real-time, data-backed placement-readiness metrics"</p>
+        </div>
+      </div>
+
+      <p class="problem-cta">
+        Nobody has real-time, data-backed visibility into student employability.<br>
+        <strong>NEXUS fixes this.</strong>
+      </p>
+    </div>
+  </section>
+
+  <!-- ─── FEATURES ───────────────────────────────────────────── -->
+  <section class="section section-alt" id="features" aria-labelledby="features-label">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label" id="features-label">Features</span>
+        <h2 class="section-title">Built for every stakeholder</h2>
+        <p class="section-sub text-gray">Students get clarity. Colleges get data. Recruiters get signal.</p>
+      </div>
+
+      <!-- F1: Dynamic Employability Score -->
+      <div class="feature-block" id="feature-score">
+        <div class="feature-text">
+          <div class="feature-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6"  y1="20" x2="6"  y2="14"/>
+            </svg>
+          </div>
+          <h3 class="feature-headline">A live ML score. Not a static resume rating.</h3>
+          <p class="feature-body">Updates when you push to GitHub, clear a mock interview, earn a cert, or attend a workshop. Think CIBIL score — but for student employability. Powered by a HuggingFace transformer fine-tuned on 50,000+ JD-profile pairs with a scikit-learn scoring pipeline.</p>
+        </div>
+        <div class="feature-visual">
+          <div class="gauge-container">
+            <div style="font-size:11px;color:#9E9E9E;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;">Employability Score</div>
+            <!-- Score 68: cx=100,cy=120,r=90; x=148.2,y=44; needle=32.4° -->
+            <svg viewBox="0 0 200 140" class="gauge-svg" aria-label="Score gauge showing 68 out of 100">
+              <path d="M 10,120 A 90,90 0 0,1 190,120" fill="none" stroke="#E0E0E0" stroke-width="14" stroke-linecap="round"/>
+              <path d="M 10,120 A 90,90 0 0,1 148,44"  fill="none" stroke="#4CAF50" stroke-width="14" stroke-linecap="round"/>
+              <g transform="translate(100,120) rotate(32.4)">
+                <line x1="0" y1="-4" x2="0" y2="-72" stroke="#1A1A2E" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="0" cy="0" r="7" fill="#1A1A2E"/>
+                <circle cx="0" cy="0" r="3.5" fill="white"/>
+              </g>
+              <text x="10"  y="136" text-anchor="middle" font-size="10" fill="#BDBDBD" font-family="Inter,sans-serif">0</text>
+              <text x="190" y="136" text-anchor="middle" font-size="10" fill="#BDBDBD" font-family="Inter,sans-serif">100</text>
+              <text x="100" y="100" text-anchor="middle" font-size="32" font-weight="700" fill="#1A1A2E" font-family="Inter,sans-serif">68</text>
+              <text x="100" y="116" text-anchor="middle" font-size="12" fill="#9E9E9E" font-family="Inter,sans-serif">/ 100</text>
+            </svg>
+            <div class="gauge-meta">
+              <span class="gauge-meta-item">⬆ +2 from last GitHub push</span>
+              <span class="gauge-meta-item text-green fw-600">↑ Improving</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- F2: Skill Gap Engine -->
+      <div class="feature-block reverse" id="feature-skills">
+        <div class="feature-text">
+          <div class="feature-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <circle cx="12" cy="12" r="6"/>
+              <circle cx="12" cy="12" r="2"/>
+            </svg>
+          </div>
+          <h3 class="feature-headline">Knows exactly what you're missing. And tells you.</h3>
+          <p class="feature-body">Pulls live JD data from Naukri, LinkedIn, and Internshala. Compares against your profile using a scikit-learn scoring pipeline. Generates a weekly action plan specific to the role you want — not a generic "learn DSA" suggestion.</p>
+        </div>
+        <div class="feature-visual">
+          <div class="heatmap-mini">
+            <div class="heatmap-mini-title">Skill Gap — SDE Roles (50 JDs scraped)</div>
+            <div class="heatmap-mini-grid">
+              <div class="heatmap-mini-row">
+                <div class="heatmap-skill-label">System Design</div>
+                <div class="hm-bar-wrap"><div class="hm-bar red"   style="width:82%"></div></div>
+                <div class="hm-status red">Gap</div>
+              </div>
+              <div class="heatmap-mini-row">
+                <div class="heatmap-skill-label">DSA / Algorithms</div>
+                <div class="hm-bar-wrap"><div class="hm-bar amber" style="width:76%"></div></div>
+                <div class="hm-status amber">Partial</div>
+              </div>
+              <div class="heatmap-mini-row">
+                <div class="heatmap-skill-label">React.js</div>
+                <div class="hm-bar-wrap"><div class="hm-bar green" style="width:58%"></div></div>
+                <div class="hm-status green">Covered</div>
+              </div>
+              <div class="heatmap-mini-row">
+                <div class="heatmap-skill-label">SQL / PostgreSQL</div>
+                <div class="hm-bar-wrap"><div class="hm-bar green" style="width:54%"></div></div>
+                <div class="hm-status green">Covered</div>
+              </div>
+              <div class="heatmap-mini-row">
+                <div class="heatmap-skill-label">Cloud / AWS</div>
+                <div class="hm-bar-wrap"><div class="hm-bar red"   style="width:42%"></div></div>
+                <div class="hm-status red">Gap</div>
+              </div>
+              <div class="heatmap-mini-row">
+                <div class="heatmap-skill-label">Machine Learning</div>
+                <div class="hm-bar-wrap"><div class="hm-bar amber" style="width:36%"></div></div>
+                <div class="hm-status amber">Partial</div>
+              </div>
+            </div>
+            <div class="hm-plan">
+              <div class="hm-plan-title">Auto-Generated Week Plan</div>
+              <div class="hm-plan-text">
+                · Day 1–2: Grokking System Design, Module 4–6<br>
+                · Day 3: Implement rate limiter from scratch → GitHub push<br>
+                · Day 4: Mock interview — URL shortener problem
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- F3: Mock Interview -->
+      <div class="feature-block" id="feature-interview">
+        <div class="feature-text">
+          <div class="feature-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8"  y1="23" x2="16" y2="23"/>
+            </svg>
+          </div>
+          <h3 class="feature-headline">Practice interviews that actually measure you.</h3>
+          <p class="feature-body">Voice + video + text. OpenAI Whisper transcribes answers in real time. MediaPipe tracks posture and eye contact via keypoint detection. The system evaluates answer quality, filler words, and confidence — then shows your improvement curve over time.</p>
+        </div>
+        <div class="feature-visual">
+          <div class="interview-visual-wrap">
+            <div class="interview-cam" aria-label="Webcam with MediaPipe skeleton overlay">
+              <!-- MediaPipe pose skeleton -->
+              <svg width="72" height="108" viewBox="0 0 72 108" aria-hidden="true">
+                <circle cx="36" cy="14" r="9" fill="none" stroke="#4CAF50" stroke-width="1.5"/>
+                <line x1="36" y1="23" x2="36" y2="60" stroke="#4CAF50" stroke-width="1.5"/>
+                <line x1="18" y1="34" x2="54" y2="34" stroke="#4CAF50" stroke-width="1.5"/>
+                <line x1="18" y1="34" x2="10" y2="56" stroke="#4CAF50" stroke-width="1.5"/>
+                <line x1="10" y1="56" x2="6"  y2="74" stroke="#4CAF50" stroke-width="1.5"/>
+                <line x1="54" y1="34" x2="62" y2="56" stroke="#4CAF50" stroke-width="1.5"/>
+                <line x1="62" y1="56" x2="66" y2="74" stroke="#4CAF50" stroke-width="1.5"/>
+                <line x1="28" y1="60" x2="44" y2="60" stroke="#4CAF50" stroke-width="1.5"/>
+                <circle cx="36" cy="34" r="2.5" fill="#4CAF50"/>
+                <circle cx="18" cy="34" r="2.5" fill="#4CAF50"/>
+                <circle cx="54" cy="34" r="2.5" fill="#4CAF50"/>
+                <circle cx="10" cy="56" r="2.5" fill="#4CAF50"/>
+                <circle cx="62" cy="56" r="2.5" fill="#4CAF50"/>
+                <circle cx="6"  cy="74" r="2.5" fill="#4CAF50"/>
+                <circle cx="66" cy="74" r="2.5" fill="#4CAF50"/>
+                <circle cx="36" cy="60" r="2.5" fill="#4CAF50"/>
+              </svg>
+              <div class="cam-label">MediaPipe · Pose Estimation</div>
+            </div>
+            <div class="interview-panel">
+              <div class="interview-q">Design a URL shortener for 1M req/day</div>
+              <div class="interview-caption">"...we'd need Base62 hashing and a load balancer in front of the app servers..."</div>
+              <div class="score-bar-row">
+                <div class="score-bar-label">Content</div>
+                <div class="score-bar-track"><div class="score-bar-fill green" style="width:74%"></div></div>
+                <div class="score-bar-pct">74%</div>
+              </div>
+              <div class="score-bar-row">
+                <div class="score-bar-label">Eye Contact</div>
+                <div class="score-bar-track"><div class="score-bar-fill amber" style="width:68%"></div></div>
+                <div class="score-bar-pct">68%</div>
+              </div>
+              <div class="score-bar-row">
+                <div class="score-bar-label">Pace</div>
+                <div class="score-bar-track"><div class="score-bar-fill green" style="width:80%"></div></div>
+                <div class="score-bar-pct">80%</div>
+              </div>
+              <div style="font-size:10px;color:#9E9E9E;margin-top:2px;">Filler words: 4 &nbsp;·&nbsp; Trend: ↑ improving</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- F4: TPO Dashboard -->
+      <div class="feature-block reverse" id="feature-tpo">
+        <div class="feature-text">
+          <div class="feature-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3"  width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+            </svg>
+          </div>
+          <h3 class="feature-headline">Data for the people who make placement decisions.</h3>
+          <p class="feature-body">Batch-level skill heatmaps, placement-readiness tiers, filterable by branch and semester. Apache Superset dashboard embedded directly into the college portal. This is the B2B product — the part colleges pay for.</p>
+        </div>
+        <div class="feature-visual">
+          <div class="tpo-visual-wrap">
+            <div class="tpo-visual-title">Batch Skill Distribution 2025–26</div>
+            <div class="tpo-bars" aria-label="Bar chart showing skill distribution by branch">
+              <div class="tpo-bar-col">
+                <div class="tpo-bar" style="height:68px;background:#1A1A2E;opacity:.92;"></div>
+                <div class="tpo-bar-lbl">CSE</div>
+              </div>
+              <div class="tpo-bar-col">
+                <div class="tpo-bar" style="height:50px;background:#1A1A2E;opacity:.7;"></div>
+                <div class="tpo-bar-lbl">ECE</div>
+              </div>
+              <div class="tpo-bar-col">
+                <div class="tpo-bar" style="height:38px;background:#1A1A2E;opacity:.52;"></div>
+                <div class="tpo-bar-lbl">ME</div>
+              </div>
+              <div class="tpo-bar-col">
+                <div class="tpo-bar" style="height:32px;background:#1A1A2E;opacity:.42;"></div>
+                <div class="tpo-bar-lbl">EE</div>
+              </div>
+            </div>
+            <div class="tpo-filter-row">
+              <div class="tpo-tag active">All Branches</div>
+              <div class="tpo-tag">Sem 7</div>
+              <div class="tpo-tag">System Design</div>
+              <div class="tpo-tag">DSA</div>
+            </div>
+            <div class="tpo-legend">
+              <div class="tpo-legend-item">
+                <div class="tpo-legend-dot" style="background:#4CAF50"></div>Ready 42%
+              </div>
+              <div class="tpo-legend-item">
+                <div class="tpo-legend-dot" style="background:#FF9800"></div>Developing 38%
+              </div>
+              <div class="tpo-legend-item">
+                <div class="tpo-legend-dot" style="background:#F44336"></div>Critical 20%
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- F5: Mentor Matching -->
+      <div class="feature-block" id="feature-mentor">
+        <div class="feature-text">
+          <div class="feature-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <h3 class="feature-headline">Match by outcome. Not by availability.</h3>
+          <p class="feature-body">NLP matches your project domain, career goal, and learning style to mentor profiles stored in Pinecone vector DB. Mentors earn reputation based on student outcomes — not just star ratings or number of sessions.</p>
+        </div>
+        <div class="feature-visual">
+          <div class="mentor-visual-wrap">
+            <div class="mentor-profile-card">
+              <div class="mentor-role">Student</div>
+              <div class="mentor-name">Your Profile</div>
+              <div class="mentor-detail">Goal: SDE-2 at product company<br>Domain: Backend + Infra</div>
+            </div>
+            <div class="mentor-connector">
+              <div class="connector-line"></div>
+              <div class="match-badge">94% Match</div>
+              <div class="connector-line"></div>
+            </div>
+            <div class="mentor-profile-card">
+              <div class="mentor-role">Mentor</div>
+              <div class="mentor-name">Priya Sharma</div>
+              <div class="mentor-detail">SDE-3 at Razorpay<br>4 students placed · ★ 4.9</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- F6: Blockchain Credentials -->
+      <div class="feature-block reverse" id="feature-credentials">
+        <div class="feature-text">
+          <div class="feature-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <h3 class="feature-headline">Credentials that can't be faked. Verified in one click.</h3>
+          <p class="feature-body">Every milestone minted as a verifiable on-chain NFT on Polygon Mumbai. Recruiters verify instantly — no calls to colleges, no fake certificates. Each credential carries a permanent transaction hash.</p>
+        </div>
+        <div class="feature-visual">
+          <div class="cred-visual-wrap">
+            <div class="cred-card-inner">
+              <div class="verified-badge">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                Verified on Polygon
+              </div>
+              <div class="cred-inner-title">Mock Interview — System Design</div>
+              <div class="cred-inner-meta">Score: 74% &nbsp;·&nbsp; Cleared &nbsp;·&nbsp; June 2025</div>
+              <div class="cred-hash-small">0x3f4a8bC91D2e4F6c7A8d9E0F1B2c3D4e5F6a7B8c</div>
+              <button class="cred-verify-btn" id="verify-btn-landing" aria-label="Verify credential on Polygon blockchain">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                Verify on-chain
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── TECH STACK ──────────────────────────────────────────── -->
+  <section class="section" id="tech-stack" aria-labelledby="tech-label">
+    <div class="container">
+      <div class="section-header text-center" style="margin-bottom:40px;">
+        <span class="section-label" id="tech-label">Tech Stack</span>
+        <h2 class="section-title">Built with production-grade tools</h2>
+        <p class="section-sub text-gray" style="margin: 0 auto;">No tutorial stack. Every technology chosen for a reason.</p>
+      </div>
+
+      <div class="tech-grid">
+        <div class="tech-card" id="tech-frontend">
+          <div class="tech-layer">Frontend</div>
+          <div class="tech-name">Next.js + Tailwind CSS</div>
+        </div>
+        <div class="tech-card" id="tech-backend">
+          <div class="tech-layer">Backend</div>
+          <div class="tech-name">FastAPI (Python)</div>
+        </div>
+        <div class="tech-card" id="tech-ml">
+          <div class="tech-layer">ML Models</div>
+          <div class="tech-name">HuggingFace Transformers</div>
+        </div>
+        <div class="tech-card" id="tech-voice">
+          <div class="tech-layer">Voice / Video</div>
+          <div class="tech-name">WebRTC + Whisper + MediaPipe</div>
+        </div>
+        <div class="tech-card" id="tech-vector">
+          <div class="tech-layer">Vector Search</div>
+          <div class="tech-name">Pinecone</div>
+        </div>
+        <div class="tech-card" id="tech-blockchain">
+          <div class="tech-layer">Blockchain</div>
+          <div class="tech-name">Polygon + IPFS</div>
+        </div>
+        <div class="tech-card" id="tech-analytics">
+          <div class="tech-layer">Analytics</div>
+          <div class="tech-name">Apache Superset</div>
+        </div>
+        <div class="tech-card" id="tech-database">
+          <div class="tech-layer">Database</div>
+          <div class="tech-name">PostgreSQL + Redis</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── DEMO FLOW ───────────────────────────────────────────── -->
+  <section class="section section-alt" id="demo-flow" aria-labelledby="flow-label">
+    <div class="container">
+      <div class="section-header text-center" style="margin-bottom:0;">
+        <span class="section-label" id="flow-label">How it works</span>
+        <h2 class="section-title">From login to verified credential</h2>
+      </div>
+
+      <div class="flow-container">
+        <div class="flow-track" aria-hidden="true"></div>
+        <div class="flow-grid">
+          <div class="flow-step" id="step-1">
+            <div class="step-num" aria-label="Step 1">1</div>
+            <div class="step-title">Student logs in</div>
+            <p class="step-desc">Score loads instantly. Dashboard shows current gaps, pending actions, and recent activity.</p>
+          </div>
+          <div class="flow-step" id="step-2">
+            <div class="step-num" aria-label="Step 2">2</div>
+            <div class="step-title">Skill gaps identified</div>
+            <p class="step-desc">ML scrapes live JDs, compares against your profile, and generates a weekly action plan.</p>
+          </div>
+          <div class="flow-step" id="step-3">
+            <div class="step-num" aria-label="Step 3">3</div>
+            <div class="step-title">Mock interview taken</div>
+            <p class="step-desc">Whisper transcribes. MediaPipe tracks posture. Score updates in real time on the dashboard.</p>
+          </div>
+          <div class="flow-step" id="step-4">
+            <div class="step-num" aria-label="Step 4">4</div>
+            <div class="step-title">Credential minted</div>
+            <p class="step-desc">Achievement minted as an NFT on Polygon. Recruiter verifies with one click. No calls needed.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ──────────────────────────────────────────────── -->
+  <footer class="footer" id="about" role="contentinfo">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="footer-logo-text">NEXUS</div>
+          <div class="footer-tagline">The operating system<br>for student employability.</div>
+        </div>
+        <nav class="footer-links" aria-label="Footer links">
+          <a href="https://github.com" target="_blank" rel="noopener" id="footer-github">GitHub</a>
+          <a href="https://linkedin.com" target="_blank" rel="noopener" id="footer-linkedin">LinkedIn</a>
+          <a href="#" id="footer-report">Project Report (PDF)</a>
+        </nav>
+        <div class="footer-right">
+          <div class="footer-right-text">
+            Built by Tanishq Sharma<br>
+            Final Year B.Tech<br>
+            IIIT Kota · 2025–26
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-strip">
+      <div class="container">
+        Stack: Next.js · FastAPI · HuggingFace · WebRTC · Whisper · MediaPipe · Pinecone · Polygon · PostgreSQL · Redis
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+  <script src="chat.js"></script>
+</body>
+</html>
