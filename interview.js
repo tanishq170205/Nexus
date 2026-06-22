@@ -270,6 +270,14 @@ function renderQuestion(idx) {
   // Set language to python3 by default
   switchLanguage(sess.currentLang, true);
 
+  var langSelects = [document.getElementById('ide-lang-select'), document.getElementById('bottom-lang-select')];
+  var lockToSql = q.question_type === 'sql';
+  langSelects.forEach(function (sel) {
+    if (!sel) return;
+    sel.disabled = lockToSql;
+    sel.style.opacity = lockToSql ? '0.6' : '1';
+  });
+
   // Nav buttons
   document.getElementById('q-prev-btn').disabled = idx === 0;
   document.getElementById('q-next-btn').disabled = idx >= sess.questions.length - 1;
@@ -430,73 +438,126 @@ function switchOutputTab(tab, clickedEl) {
   }
 }
 
-function runCode() {
+// ─────────────────────────────────────────────────────────────
+// RUN CODE & SUBMIT — REAL backend execution via /api/execute
+// ─────────────────────────────────────────────────────────────
+async function runCode() {
   sess.runCount++;
-  var code = sess.monacoEditor ? sess.monacoEditor.getValue().trim() : '';
-  var isEmpty = code.length < 30 || code.includes('pass') || code.includes('TODO');
-  var ms = Math.floor(Math.random() * 80) + 20;
-  var mem = (Math.random() * 5 + 14).toFixed(1);
+  var code = sess.monacoEditor ? sess.monacoEditor.getValue() : '';
+  var q = sess.questions[sess.currentIdx];
+  if (!q) return;
 
   switchOutputTab('output', null);
+  document.getElementById('tab-output').innerHTML =
+    '<div style="color:#8B949E;margin-bottom:8px;">Running test cases…</div>';
 
-  document.getElementById('tab-output').innerHTML = '<div style="color:#8B949E;margin-bottom:8px;">Running test cases…</div>';
-  setTimeout(function () {
-    var allPass = !isEmpty && (sess.runCount > 1 || Math.random() > 0.35);
-    var q = sess.questions[sess.currentIdx];
-    var cases = TEST_CASES[q ? (q.slug||'default') : 'default'] || TEST_CASES['default'];
-
-    var html = '<div style="color:#3FB950;margin-bottom:8px;">Runtime: ' + ms + 'ms &nbsp;·&nbsp; Memory: ' + mem + 'MB</div>';
-    html += '<div style="height:1px;background:#30363D;margin-bottom:8px;"></div>';
-    cases.forEach(function (c, i) {
-      var pass = allPass;
-      html += '<div style="margin-bottom:8px;">';
-      html += '<div style="color:#8B949E;font-size:11px;margin-bottom:2px;">Case ' + (i+1) + ':</div>';
-      html += '<div style="color:var(--code-text);">Your Output: <span style="color:' + (pass?'#3FB950':'#F85149') + ';">' + (pass ? c.expected : 'Wrong') + '</span></div>';
-      html += '<div style="color:#8B949E;">Expected: <span style="color:#A5D6FF;">' + c.expected + '</span></div>';
-      html += '</div>';
+  try {
+    var res = await fetch('http://localhost:8000/api/execute', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        slug: q.slug,
+        language: sess.currentLang,
+        code: code,
+      }),
     });
-    html += '<div style="margin-top:6px;font-weight:700;color:' + (allPass?'#3FB950':'#F85149') + ';">' + (allPass ? '✓ All ' + cases.length + ' test cases passed' : '✗ Some test cases failed') + '</div>';
-    document.getElementById('tab-output').innerHTML = html;
-  }, 900);
+    var data = await res.json();
+    renderRunOutput(data);
+  } catch (e) {
+    console.error('[runCode] execute failed:', e);
+    document.getElementById('tab-output').innerHTML =
+      '<div style="color:#F85149;">Could not reach the execution server. Is the backend running on localhost:8000?</div>';
+  }
 }
 
-function submitCode() {
-  var code = sess.monacoEditor ? sess.monacoEditor.getValue().trim() : '';
-  var hasCode = code.length > 50 && !code.includes('TODO') && !code.includes('pass\n    pass');
-  var accepted = hasCode && sess.runCount > 0;
+function renderRunOutput(data) {
+  var html = '';
+  if (data.verdict === 'Unsupported' || data.verdict === 'Sandbox Error') {
+    html = '<div style="color:#F0883E;">' + (data.message || 'Execution unavailable.') + '</div>';
+  } else if (data.verdict === 'Compilation Error') {
+    html = '<div style="color:#F85149;font-weight:700;margin-bottom:8px;">Compilation Error</div>';
+    html += '<pre style="color:#F85149;white-space:pre-wrap;font-size:12px;">' + escapeHtml(data.stderr || '') + '</pre>';
+  } else if (data.verdict === 'Runtime Error') {
+    html = '<div style="color:#F85149;font-weight:700;margin-bottom:8px;">Runtime Error</div>';
+    html += '<pre style="color:#F85149;white-space:pre-wrap;font-size:12px;">' + escapeHtml(data.stderr || '') + '</pre>';
+  } else {
+    var passColor = data.passed ? '#3FB950' : '#F85149';
+    html += '<div style="height:1px;background:#30363D;margin-bottom:8px;"></div>';
+    (data.cases || []).forEach(function (c) {
+      html += '<div style="margin-bottom:8px;">';
+      html += '<div style="color:#8B949E;font-size:11px;margin-bottom:2px;">Case ' + c.index + ':</div>';
+      html += '<div>Your Output: <span style="color:' + (c.pass ? '#3FB950' : '#F85149') + ';">' + escapeHtml(c.actual) + '</span></div>';
+      html += '<div style="color:#8B949E;">Expected: <span style="color:#A5D6FF;">' + escapeHtml(c.expected) + '</span></div>';
+      html += '</div>';
+    });
+    html += '<div style="margin-top:6px;font-weight:700;color:' + passColor + ';">' +
+      (data.passed ? '✓ All test cases passed' : '✗ Some test cases failed') + '</div>';
+  }
+  document.getElementById('tab-output').innerHTML = html;
+}
 
-  // Record result
+function escapeHtml(s) {
+  var div = document.createElement('div');
+  div.textContent = s || '';
+  return div.innerHTML;
+}
+
+async function submitCode() {
+  var code = sess.monacoEditor ? sess.monacoEditor.getValue() : '';
   var q = sess.questions[sess.currentIdx];
+  if (!q) return;
+
+  switchOutputTab('verdict', null);
+  document.getElementById('tab-verdict').innerHTML =
+    '<div style="color:#8B949E;">Submitting…</div>';
+
   var elapsed = Math.floor((Date.now() - (sess.questionStartTime || sess.startTime)) / 1000);
   var mins = Math.floor(elapsed / 60);
   var secs = elapsed % 60;
 
-  sess.results[sess.currentIdx] = {
-    accepted: accepted,
-    title: q ? q.title : 'Unknown',
-    difficulty: q ? q.difficulty : 'Medium',
-    slug: q ? (q.slug || 'default') : 'default',
-    timeTaken: mins + 'm ' + secs + 's',
-  };
-  sess.questionStartTime = Date.now();
-  renderDots();
+  try {
+    var res = await fetch('http://localhost:8000/api/execute', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        slug: q.slug,
+        language: sess.currentLang,
+        code: code,
+      }),
+    });
+    var data = await res.json();
+    var accepted = data.verdict === 'Accepted';
 
-  // Show verdict
-  var runtimePct = Math.floor(Math.random() * 30 + 65);
-  var memPct     = Math.floor(Math.random() * 30 + 55);
+    sess.results[sess.currentIdx] = {
+      accepted: accepted,
+      title: q.title,
+      difficulty: q.difficulty,
+      slug: q.slug,
+      timeTaken: mins + 'm ' + secs + 's',
+    };
+    sess.questionStartTime = Date.now();
+    renderDots();
+    renderVerdict(data, accepted);
+
+  } catch (e) {
+    console.error('[submitCode] execute failed:', e);
+    document.getElementById('tab-verdict').innerHTML =
+      '<div style="color:#F85149;">Could not reach the execution server. Is the backend running on localhost:8000?</div>';
+  }
+}
+
+function renderVerdict(data, accepted) {
   var scoreDelta = accepted ? 7 : -1;
-
-  switchOutputTab('verdict', null);
   var html = '';
   if (accepted) {
     html += '<div style="font-size:22px;font-weight:800;color:#3FB950;margin-bottom:8px;">✓ ACCEPTED</div>';
-    html += '<div style="color:#8B949E;margin-bottom:2px;">Runtime beats <strong style="color:var(--code-text);">' + runtimePct + '%</strong> of submissions</div>';
-    html += '<div style="color:#8B949E;margin-bottom:10px;">Memory beats <strong style="color:var(--code-text);">' + memPct + '%</strong> of submissions</div>';
-    html += '<div style="height:1px;background:#30363D;margin-bottom:10px;"></div>';
     html += '<div style="color:#8B949E;font-size:12px;">Score impact: <strong style="color:#3FB950;">+' + scoreDelta + ' points</strong></div>';
+  } else if (data.verdict === 'Compilation Error' || data.verdict === 'Runtime Error') {
+    html += '<div style="font-size:22px;font-weight:800;color:#F85149;margin-bottom:8px;">✗ ' + data.verdict.toUpperCase() + '</div>';
+    html += '<pre style="color:#F85149;white-space:pre-wrap;font-size:12px;margin-bottom:10px;">' + escapeHtml(data.stderr || '') + '</pre>';
   } else {
     html += '<div style="font-size:22px;font-weight:800;color:#F85149;margin-bottom:8px;">✗ WRONG ANSWER</div>';
-    html += '<div style="color:#8B949E;margin-bottom:10px;">Your solution did not pass all test cases. Try running the code first.</div>';
+    html += '<div style="color:#8B949E;margin-bottom:10px;">Your solution did not pass all test cases.</div>';
     html += '<div style="color:#8B949E;font-size:12px;">Score impact: <strong style="color:#F85149;">' + scoreDelta + ' point</strong></div>';
   }
   document.getElementById('tab-verdict').innerHTML = html;
@@ -539,13 +600,46 @@ function resumeTimer() { if (!sess.timerInterval && sess.active) startTimer(); }
 // ─────────────────────────────────────────────────────────────
 function setupTabDetection() {}
 
+var _tabHandled = false;
+var _blurIgnoreUntil = 0; // suppress false blur events right after focusing Monaco
+
 function setupTabSwap() {
-  document.addEventListener('visibilitychange', onTabHidden);
-  window.addEventListener('blur', onTabHidden);
+  // visibilitychange is the reliable signal — fires ONLY on real tab/window switches,
+  // minimizing, or switching virtual desktops. It does NOT fire from clicking inside
+  // page elements like Monaco's internal textarea.
+  document.addEventListener('visibilitychange', onVisibilityChange);
+
+  // window blur is kept ONLY as a backup for edge cases (e.g. alt-tab on some OSes
+  // where visibilitychange is delayed), but guarded against Monaco's internal
+  // focus/blur churn using a short ignore window.
+  window.addEventListener('blur', onWindowBlur);
+  window.addEventListener('focus', onWindowFocus);
 }
 
-var _tabHandled = false;
-function onTabHidden() {
+function onVisibilityChange() {
+  if (document.hidden) {
+    handleTabViolation();
+  }
+}
+
+function onWindowBlur() {
+  // Give a 250ms grace period — Monaco editor and other inputs can fire
+  // spurious blur events on internal focus changes. A REAL tab switch
+  // will also trigger visibilitychange almost simultaneously, which is
+  // the authoritative check. This blur handler is just a fallback net.
+  _blurIgnoreUntil = Date.now() + 250;
+  setTimeout(function () {
+    if (document.hidden && Date.now() >= _blurIgnoreUntil - 250) {
+      handleTabViolation();
+    }
+  }, 260);
+}
+
+function onWindowFocus() {
+  // Returning focus — nothing to log, but available as a hook if needed later.
+}
+
+function handleTabViolation() {
   if (!sess.active || _tabHandled) return;
   _tabHandled = true;
 
@@ -557,7 +651,6 @@ function onTabHidden() {
   pauseTimer();
   takeSnapshot('tabswitch');
 
-  // Show overlay
   document.getElementById('iv2-tabswap-overlay').style.display = 'flex';
   document.getElementById('tabswap-count-text').textContent =
     'Violation #' + sess.tabViolations + ' of 3 — 3 violations = session terminated';
@@ -937,8 +1030,9 @@ function endSession(reason) {
   if (_cocoModel)         { _cocoModel = null; }
   if (_phoneCanvas)       { _phoneCanvas.remove(); _phoneCanvas = null; }
 
-  document.removeEventListener('visibilitychange', onTabHidden);
-  window.removeEventListener('blur', onTabHidden);
+  document.removeEventListener('visibilitychange', onVisibilityChange);
+  window.removeEventListener('blur', onWindowBlur);
+  window.removeEventListener('focus', onWindowFocus);
 
   // Show summary
   document.getElementById('iv2-session').style.display  = 'none';

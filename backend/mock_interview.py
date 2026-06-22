@@ -1,20 +1,20 @@
 """
 NEXUS — Mock Interview Session Manager
 ======================================
-Manages Claude conversation sessions for the Mock Interview product.
+Manages Groq conversation sessions for the Mock Interview product.
 
 Key design decisions:
   - Sessions stored in-memory (dict). Short-lived; restart = session lost. Fine for demo.
-  - Claude Sonnet for interview conversation (quality matters).
-  - Claude Haiku for meta-calls: scoring, summary (speed + cost).
+  - Groq llama-3.3-70b for interview conversation (free, fast, high quality).
+  - Groq llama-3.3-70b for meta-calls: scoring, summary.
   - Scoring is a SEPARATE API call after each stage — never embedded in conversation reply.
-    This prevents the fragile <!-- SCORE --> comment parsing anti-pattern.
   - Stage advancement is server-side state machine (exchange count budget),
-    NOT Claude-signalled. More reliable.
+    NOT model-signalled. More reliable.
 
 Setup:
-  pip install anthropic
-  Set ANTHROPIC_API_KEY below (or via environment variable).
+  pip install groq
+  Set GROQ_API_KEY below (or via environment variable).
+  Get your free key at: https://console.groq.com
 """
 
 import uuid
@@ -23,11 +23,18 @@ import os
 from datetime import datetime
 from typing import Optional
 
+# Load .env file if present
 try:
-    import anthropic
-    _ANTHROPIC_AVAILABLE = True
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 except ImportError:
-    _ANTHROPIC_AVAILABLE = False
+    pass
+
+try:
+    from groq import Groq
+    _GROQ_AVAILABLE = True
+except ImportError:
+    _GROQ_AVAILABLE = False
 
 from claude_prompts import (
     get_system_prompt,
@@ -37,12 +44,12 @@ from claude_prompts import (
 )
 
 # ─────────────────────────────────────────────────────────────
-# CONFIG — fill in your API key
+# CONFIG — paste your Groq API key here
+# Get a free key at: https://console.groq.com
 # ─────────────────────────────────────────────────────────────
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "YOUR_API_KEY_HERE")
-
-INTERVIEW_MODEL   = "claude-3-5-sonnet-20241022"   # interview conversation
-SCORING_MODEL     = "claude-3-5-haiku-20241022"     # meta scoring + summary (faster/cheaper)
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
+INTERVIEW_MODEL = "llama-3.3-70b-versatile"
+SCORING_MODEL   = "llama-3.3-70b-versatile"
 
 MAX_TOKENS_REPLY   = 500
 MAX_TOKENS_SCORING = 250
@@ -53,17 +60,17 @@ MAX_TOKENS_SUMMARY = 400
 # ─────────────────────────────────────────────────────────────
 class InterviewSession:
     def __init__(self, role: str, experience: str, duration_mins: int):
-        self.session_id   = str(uuid.uuid4())
-        self.role         = role
-        self.experience   = experience
-        self.duration_mins= duration_mins
-        self.stages       = ROLE_STAGES.get(role, ROLE_STAGES["sde"])
-        self.stage_idx    = 0
-        self.exchange_count = 0          # exchanges in current stage
-        self.stage_scores   = {}         # stage_name → {technical, communication, depth, comment}
-        self.messages       = []         # Claude conversation history [{role, content}]
-        self.start_time     = datetime.now()
-        self.ended          = False
+        self.session_id    = str(uuid.uuid4())
+        self.role          = role
+        self.experience    = experience
+        self.duration_mins = duration_mins
+        self.stages        = ROLE_STAGES.get(role, ROLE_STAGES["sde"])
+        self.stage_idx     = 0
+        self.exchange_count  = 0
+        self.stage_scores    = {}
+        self.messages        = []
+        self.start_time      = datetime.now()
+        self.ended           = False
 
     @property
     def current_stage(self) -> str:
@@ -91,28 +98,53 @@ SESSIONS: dict[str, InterviewSession] = {}
 # CLIENT HELPER
 # ─────────────────────────────────────────────────────────────
 def _get_client():
-    if not _ANTHROPIC_AVAILABLE:
+    """Returns a configured Groq client."""
+    if not _GROQ_AVAILABLE:
         raise RuntimeError(
-            "anthropic package not installed. Run: pip install anthropic"
+            "groq package not installed. Run: pip install groq"
         )
-    if ANTHROPIC_API_KEY == "YOUR_API_KEY_HERE":
+    if GROQ_API_KEY == "PASTE_YOUR_GROQ_KEY_HERE":
         raise RuntimeError(
-            "Anthropic API key not set. Edit ANTHROPIC_API_KEY in backend/mock_interview.py "
-            "or set the ANTHROPIC_API_KEY environment variable."
+            "Groq API key not set. Edit GROQ_API_KEY in backend/mock_interview.py "
+            "or set the GROQ_API_KEY environment variable. "
+            "Get a free key at: https://console.groq.com"
         )
-    return anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+    return Groq(api_key=GROQ_API_KEY)
+
+
+def _call_groq(system_prompt: str, messages: list, max_tokens: int = 500) -> str:
+    """Call Groq with full conversation history."""
+    client = _get_client()
+
+    groq_messages = [{"role": "system", "content": system_prompt}]
+    for m in messages:
+        groq_messages.append({"role": m["role"], "content": m["content"]})
+
+    response = client.chat.completions.create(
+        model=INTERVIEW_MODEL,
+        messages=groq_messages,
+        max_tokens=max_tokens,
+        temperature=0.8,
+    )
+    return response.choices[0].message.content.strip()
+
+
+def _call_groq_once(prompt: str, max_tokens: int = 400) -> str:
+    """Single-turn Groq call — for scoring and summary."""
+    client = _get_client()
+    response = client.chat.completions.create(
+        model=SCORING_MODEL,
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=max_tokens,
+        temperature=0.3,
+    )
+    return response.choices[0].message.content.strip()
 
 
 # ─────────────────────────────────────────────────────────────
-# SCORING CALL — separate, structured, never embedded in reply
+# SCORING CALL
 # ─────────────────────────────────────────────────────────────
-def _score_stage(sess: InterviewSession, client, stage_name: str) -> dict:
-    """
-    After a stage completes, ask Claude Haiku to score the candidate on
-    3 dimensions in JSON only. No conversational text — pure JSON response.
-    This avoids the fragile <!-- SCORE --> comment-parsing anti-pattern.
-    """
-    # Take last 8 messages from conversation as context for this stage
+def _score_stage(sess: InterviewSession, stage_name: str) -> dict:
     recent = sess.messages[-min(10, len(sess.messages)):]
     convo_lines = "\n".join(
         f"{'INTERVIEWER' if m['role'] == 'assistant' else 'CANDIDATE'}: {m['content']}"
@@ -134,20 +166,14 @@ Reply in valid JSON ONLY — no preamble, no explanation, no markdown fences:
 {{"technical_accuracy": <int>, "communication_clarity": <int>, "depth_of_thought": <int>, "brief_comment": "<one sentence>"}}"""
 
     try:
-        response = client.messages.create(
-            model=SCORING_MODEL,
-            max_tokens=MAX_TOKENS_SCORING,
-            messages=[{"role": "user", "content": scoring_prompt}],
-        )
-        raw = response.content[0].text.strip()
-        # Strip markdown fences if Haiku adds them despite instruction
+        raw = _call_groq_once(scoring_prompt, max_tokens=MAX_TOKENS_SCORING)
         if raw.startswith("```"):
             raw = raw.split("```")[1]
             if raw.startswith("json"):
                 raw = raw[4:]
+        raw = raw.strip()
         return json.loads(raw)
     except Exception as e:
-        # Fallback — never crash the interview over scoring
         print(f"[Scoring] Warning: could not parse score for stage '{stage_name}': {e}")
         return {
             "technical_accuracy": 70,
@@ -161,43 +187,32 @@ Reply in valid JSON ONLY — no preamble, no explanation, no markdown fences:
 # SESSION: CREATE
 # ─────────────────────────────────────────────────────────────
 def create_session(role: str, experience: str, duration_mins: int) -> dict:
-    """
-    Creates a new interview session and gets Claude's opening message.
-    Returns: {session_id, first_message, stage, stages, stage_labels}
-    """
     sess = InterviewSession(role, experience, duration_mins)
     SESSIONS[sess.session_id] = sess
 
     try:
-        client = _get_client()
         system = get_system_prompt(
             role, experience, sess.current_stage, sess.time_remaining_secs
         )
-        response = client.messages.create(
-            model=INTERVIEW_MODEL,
-            max_tokens=MAX_TOKENS_REPLY,
-            system=system,
-            messages=[{"role": "user", "content": "Please begin the interview now."}],
-        )
-        first_msg = response.content[0].text.strip()
+        opening_messages = [{"role": "user", "content": "Please begin the interview now."}]
+        first_msg = _call_groq(system, opening_messages, max_tokens=MAX_TOKENS_REPLY)
     except Exception as e:
         first_msg = (
-            f"Hello! Welcome to your {role.upper()} interview. "
-            "I'm experiencing a brief connection issue, but let's get started. "
-            "Could you tell me a bit about yourself and your background?"
+            f"Hello! Welcome to your {role.upper()} technical interview. "
+            f"I'm your AI interviewer today. Let's dive right in — "
+            f"could you start by telling me a bit about yourself and your background?"
         )
         print(f"[MockInterview] Warning on session create: {e}")
 
-    # Seed conversation history (system message is separate in Claude API)
     sess.messages.append({"role": "user",      "content": "Please begin the interview now."})
     sess.messages.append({"role": "assistant", "content": first_msg})
 
     return {
-        "session_id":   sess.session_id,
+        "session_id":    sess.session_id,
         "first_message": first_msg,
-        "stage":        sess.current_stage,
-        "stages":       sess.stages,
-        "stage_labels": {s: STAGE_LABELS.get(s, s) for s in sess.stages},
+        "stage":         sess.current_stage,
+        "stages":        sess.stages,
+        "stage_labels":  {s: STAGE_LABELS.get(s, s) for s in sess.stages},
     }
 
 
@@ -205,10 +220,6 @@ def create_session(role: str, experience: str, duration_mins: int) -> dict:
 # SESSION: SEND MESSAGE
 # ─────────────────────────────────────────────────────────────
 def send_message(session_id: str, user_text: str) -> dict:
-    """
-    Appends user message, calls Claude, checks stage advancement.
-    Returns: {reply, stage, stage_changed, stage_label}
-    """
     sess = SESSIONS.get(session_id)
     if not sess:
         raise ValueError(f"Session '{session_id}' not found.")
@@ -219,52 +230,40 @@ def send_message(session_id: str, user_text: str) -> dict:
     sess.exchange_count += 1
 
     try:
-        client = _get_client()
         system = get_system_prompt(
             sess.role, sess.experience,
             sess.current_stage, sess.time_remaining_secs,
         )
-        response = client.messages.create(
-            model=INTERVIEW_MODEL,
-            max_tokens=MAX_TOKENS_REPLY,
-            system=system,
-            messages=sess.messages,  # full conversation history
-        )
-        reply = response.content[0].text.strip()
-        print(f"[MockInterview] Session {session_id} now has {len(sess.messages)+1} messages")
+        reply = _call_groq(system, sess.messages, max_tokens=MAX_TOKENS_REPLY)
+        print(f"[MockInterview] Session {session_id} exchange #{sess.exchange_count} in stage '{sess.current_stage}'")
     except RuntimeError:
-        # Re-raise config errors (missing API key) — these must surface to the user
         raise
     except Exception as e:
         print(f"[MockInterview] ERROR in send_message: {e}")
-        raise RuntimeError(f"Claude API call failed: {e}")
+        raise RuntimeError(f"Groq API call failed: {e}")
 
     sess.messages.append({"role": "assistant", "content": reply})
 
-    # ── Stage advancement check (server-side, not Claude-signalled) ───
     stage_changed = False
     if sess.should_advance():
-        # Score the stage that just finished (separate Haiku call)
         try:
-            client_for_score = _get_client()
-            score = _score_stage(sess, client_for_score, sess.current_stage)
+            score = _score_stage(sess, sess.current_stage)
         except Exception:
             score = {"technical_accuracy": 70, "communication_clarity": 70,
                      "depth_of_thought": 70, "brief_comment": "Score unavailable."}
         sess.stage_scores[sess.current_stage] = score
 
-        # Advance
         sess.stage_idx += 1
         sess.exchange_count = 0
         stage_changed = True
 
     return {
-        "reply":        reply,
-        "stage":        sess.current_stage,
-        "stage_label":  STAGE_LABELS.get(sess.current_stage, sess.current_stage),
-        "stage_changed": stage_changed,
+        "reply":             reply,
+        "stage":             sess.current_stage,
+        "stage_label":       STAGE_LABELS.get(sess.current_stage, sess.current_stage),
+        "stage_changed":     stage_changed,
         "exchanges_in_stage": sess.exchange_count,
-        "budget_for_stage": STAGE_EXCHANGE_BUDGET.get(sess.current_stage, 4),
+        "budget_for_stage":  STAGE_EXCHANGE_BUDGET.get(sess.current_stage, 4),
     }
 
 
@@ -272,24 +271,16 @@ def send_message(session_id: str, user_text: str) -> dict:
 # SESSION: END + GENERATE REPORT
 # ─────────────────────────────────────────────────────────────
 def end_session(session_id: str) -> dict:
-    """
-    Scores any unscored stages, generates Claude's written summary,
-    returns the full post-session report.
-    """
     sess = SESSIONS.get(session_id)
     if not sess:
         raise ValueError(f"Session '{session_id}' not found.")
     sess.ended = True
 
     try:
-        client = _get_client()
-
-        # Score current (last active) stage if not yet scored
         if sess.current_stage not in sess.stage_scores:
-            score = _score_stage(sess, client, sess.current_stage)
+            score = _score_stage(sess, sess.current_stage)
             sess.stage_scores[sess.current_stage] = score
 
-        # ── Summary call — Claude Haiku, separate from conversation ──
         recent = sess.messages[-min(20, len(sess.messages)):]
         convo_text = "\n".join(
             f"{'INTERVIEWER' if m['role']=='assistant' else 'CANDIDATE'}: {m['content']}"
@@ -306,12 +297,7 @@ Focus on: one clear strength, one area for improvement, one actionable tip.
 Write in natural prose — no bullet points, no headers.
 Reply with ONLY the feedback text."""
 
-        summary_resp = client.messages.create(
-            model=SCORING_MODEL,
-            max_tokens=MAX_TOKENS_SUMMARY,
-            messages=[{"role": "user", "content": summary_prompt}],
-        )
-        summary_text = summary_resp.content[0].text.strip()
+        summary_text = _call_groq_once(summary_prompt, max_tokens=MAX_TOKENS_SUMMARY)
 
     except Exception as e:
         summary_text = (
@@ -321,7 +307,6 @@ Reply with ONLY the feedback text."""
         )
         print(f"[MockInterview] Warning on end_session: {e}")
 
-    # ── Calculate overall score ────────────────────────────────
     all_scores = list(sess.stage_scores.values())
     if all_scores:
         total = sum(
@@ -334,7 +319,6 @@ Reply with ONLY the feedback text."""
     else:
         overall = 70
 
-    # ── Build stage breakdown for report ──────────────────────
     stage_breakdown = []
     for stage in sess.stages:
         sc = sess.stage_scores.get(stage)
@@ -375,22 +359,22 @@ Reply with ONLY the feedback text."""
 
 
 # ─────────────────────────────────────────────────────────────
-# SESSION: GET STATE (for polling / reconnect)
+# SESSION: GET STATE
 # ─────────────────────────────────────────────────────────────
 def get_session_state(session_id: str) -> dict:
     sess = SESSIONS.get(session_id)
     if not sess:
         raise ValueError(f"Session '{session_id}' not found.")
     return {
-        "session_id":         sess.session_id,
-        "role":               sess.role,
-        "experience":         sess.experience,
-        "stage":              sess.current_stage,
-        "stage_label":        STAGE_LABELS.get(sess.current_stage, sess.current_stage),
-        "stage_idx":          sess.stage_idx,
-        "stages":             sess.stages,
-        "elapsed_mins":       sess.elapsed_mins,
+        "session_id":          sess.session_id,
+        "role":                sess.role,
+        "experience":          sess.experience,
+        "stage":               sess.current_stage,
+        "stage_label":         STAGE_LABELS.get(sess.current_stage, sess.current_stage),
+        "stage_idx":           sess.stage_idx,
+        "stages":              sess.stages,
+        "elapsed_mins":        sess.elapsed_mins,
         "time_remaining_secs": sess.time_remaining_secs,
-        "exchange_count":     sess.exchange_count,
-        "ended":              sess.ended,
+        "exchange_count":      sess.exchange_count,
+        "ended":               sess.ended,
     }

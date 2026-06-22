@@ -193,7 +193,7 @@ function showMITabOverlay() {
   }
   
   overlay.style.display = 'flex';
-  document.getElementById('mi-tabswap-count-text').textContent = \`Violation #\${miTabViolations} of 3 — 3 violations = session terminated\`;
+  document.getElementById('mi-tabswap-count-text').textContent = `Violation #${miTabViolations} of 3 — 3 violations = session terminated`;
   
   if (miTabViolations >= 3) {
     setTimeout(() => {
@@ -232,7 +232,7 @@ window.addEventListener('blur', () => {
   const bar = document.getElementById('mi-pr-tab-bar');
   if(badge) {
     badge.className = 'proctor-row-badge badge-warn';
-    badge.textContent = \`\u26A0\uFE0F Switched (\${miTabViolations})\`;
+    badge.textContent = `\u26A0\uFE0F Switched (${miTabViolations})`;
   }
   if(bar) bar.className = 'proctor-bar-fill bar-warn';
   
@@ -309,11 +309,11 @@ function onMIFaceResults(results) {
     const conf = Math.floor(Math.random() * 8 + 90);
     if (badge) {
       badge.className = 'proctor-row-badge badge-ok';
-      badge.textContent = \`\u2713 Yes \${conf}%\`;
+      badge.textContent = `\u2713 Yes ${conf}%`;
     }
     if (bar) {
       bar.className = 'proctor-bar-fill bar-ok';
-      bar.style.width = \`\${conf}%\`;
+      bar.style.width = `${conf}%`;
     }
     
     const main = document.getElementById('mi-proctor-status-main');
@@ -669,23 +669,58 @@ function miToggleScratchpad() {
   if (pad.style.display === 'none') {
     pad.style.display = 'block';
     if (!window.miMonaco) {
-      // Init Monaco if available
       if (window.monaco) {
         window.miMonaco = monaco.editor.create(document.getElementById('mi-monaco'), {
-          value: "# Write code or notes here. Claude cannot see this.\n",
+          value: "# Write your code here and click 'Submit to Interviewer'\n",
           language: "python",
-          theme: "vs-light",
+          theme: "vs-dark",
           minimap: { enabled: false },
-          lineNumbers: "off",
-          fontSize: 12
+          lineNumbers: "on",
+          fontSize: 13,
+          scrollBeyondLastLine: false,
+          automaticLayout: true,
         });
       } else {
-        document.getElementById('mi-monaco').innerHTML = `<textarea style="width:100%;height:100%;padding:10px;border:none;resize:none;font-family:monospace;" placeholder="Write code or notes here. Claude cannot see this."></textarea>`;
+        document.getElementById('mi-monaco').innerHTML = `<textarea id="mi-code-textarea" style="width:100%;height:200px;padding:12px;border:none;resize:none;font-family:'JetBrains Mono',monospace;font-size:13px;background:#1E1E1E;color:#D4D4D4;box-sizing:border-box;" placeholder="# Write your code here and click Submit to Interviewer"></textarea>`;
       }
     }
   } else {
     pad.style.display = 'none';
   }
+}
+
+function miChangeLang() {
+  const lang = document.getElementById('mi-lang-select').value;
+  if (window.miMonaco && window.monaco) {
+    monaco.editor.setModelLanguage(window.miMonaco.getModel(), lang);
+  }
+}
+
+function miSubmitCode() {
+  let code = '';
+  if (window.miMonaco && window.miMonaco.getValue) {
+    code = window.miMonaco.getValue().trim();
+  } else {
+    const ta = document.getElementById('mi-code-textarea');
+    if (ta) code = ta.value.trim();
+  }
+
+  if (!code || code.startsWith('# Write your code')) {
+    alert('Please write some code before submitting.');
+    return;
+  }
+
+  const lang = document.getElementById('mi-lang-select').value;
+  const message = `Here is my ${lang} code:\n\`\`\`${lang}\n${code}\n\`\`\``;
+
+  // Show it as candidate message in transcript
+  appendTranscript('candidate', `📤 Submitted ${lang} code:\n${code}`);
+
+  // Send to interviewer
+  sendCandidateMessage(message);
+
+  // Collapse IDE after submit
+  document.getElementById('mi-scratchpad').style.display = 'none';
 }
 
 // Re-fetch voices when they load (Chrome quirk)

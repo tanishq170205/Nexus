@@ -11,7 +11,7 @@ Built as a Final Year B.Tech Project at IIIT Kota by **Tanishq Sharma** (Electro
 ### 🤖 AI Mock Interview System
 - Role-based, multi-stage interview simulations for **SDE, ML, Analyst, Frontend, and DevOps** tracks. Each role runs through a fixed stage sequence (e.g. SDE: `Warm-up → DSA → System Design → Core CS Concepts → Behavioral`).
 - Each stage has an exchange budget (2–5 exchanges) before the interview auto-advances to the next stage.
-- **Automated per-stage scoring**: when a stage ends, a separate Claude call scores the candidate on technical accuracy, communication clarity, and depth — kept deliberately separate from the conversational reply so scoring never leaks into what the candidate sees mid-interview.
+- **Automated per-stage scoring**: when a stage ends, a separate Groq call scores the candidate on technical accuracy, communication clarity, and depth — kept deliberately separate from the conversational reply so scoring never leaks into what the candidate sees mid-interview.
 - Live webcam proctoring during the session via **MediaPipe Face Detection** (face-presence tracking with on-screen warnings) and tab-switch detection (`visibilitychange` listener) — same proctoring pattern used in the coding round.
 
 ### 💻 Coding Assessment Platform
@@ -25,7 +25,7 @@ Built as a Final Year B.Tech Project at IIIT Kota by **Tanishq Sharma** (Electro
 ### 🎓 Credential Wallet
 - View and manage earned credentials in a dedicated wallet view.
 
-### 👨‍🏫 Mentor Directory & Multi-Role Support
+### 👨🏫 Mentor Directory & Multi-Role Support
 - Role-aware platform with **student, mentor, recruiter, and TPO** accounts (each with role-specific profile fields — e.g. `domain_expertise` for mentors, `company`/`linkedin_url` for recruiters, `department`/`employee_id` for TPOs).
 - TPO batch view for placement-officer-level analytics.
 - Mentor browsing by domain expertise.
@@ -55,12 +55,12 @@ Built as a Final Year B.Tech Project at IIIT Kota by **Tanishq Sharma** (Electro
         │ (profiles table)│ │  Piston API  │ │ ← code execution/judging
         └──────────────┘   │  └────────────┘ │
                             │  ┌────────────┐ │
-                            │  Claude API   │ │ ← mock interview + scoring
+                            │  Groq API    │ │ ← mock interview + scoring
                             │  └────────────┘ │
                             └────────────────┘
 ```
 
-Piston and Claude are independent outbound calls from the backend, not a linear pipeline — code execution and AI interviewing don't depend on each other.
+Piston and Groq are independent outbound calls from the backend, not a linear pipeline — code execution and AI interviewing don't depend on each other.
 
 ---
 
@@ -72,7 +72,7 @@ Piston and Claude are independent outbound calls from the backend, not a linear 
 | Backend | FastAPI, Python, Pydantic |
 | Database & Auth | Supabase (PostgreSQL + Supabase Auth) |
 | Code Execution | Piston API (public instance) |
-| AI Interviewer | Anthropic Claude API (separate calls for conversation vs. stage scoring) |
+| AI Interviewer | Groq API — llama-3.3-70b-versatile (separate calls for conversation vs. stage scoring) |
 
 > **Note on legacy code:** `backend/auth.py`, `database.py`, `models.py`, `schemas.py`, and `nexus.db` are leftovers from an earlier SQLAlchemy + JWT design and are **not imported by `main.py`**. The live backend uses Supabase exclusively for auth and persistence. Safe to ignore or remove unless reverting to a self-hosted DB.
 
@@ -93,7 +93,7 @@ NEXUS/
 └── backend/
     ├── main.py             # FastAPI app, all routes
     ├── claude_prompts.py   # Stage definitions, labels, exchange budgets, prompts
-    ├── mock_interview.py   # Mock interview session + per-stage scoring logic
+    ├── mock_interview.py   # Mock interview session + per-stage scoring logic (Groq)
     ├── harnesses.py        # Per-language execution harnesses + Piston config
     ├── problems.py         # DSA / SQL / ML / React problem pools
     ├── profiles.sql        # Supabase table setup script
@@ -109,22 +109,16 @@ NEXUS/
 
 ```bash
 cd backend
-pip install fastapi uvicorn supabase pydantic anthropic
+pip install fastapi uvicorn supabase pydantic groq python-dotenv
 ```
 
-Currently, `SUPABASE_URL`/`SUPABASE_KEY` are hardcoded near the top of `main.py`, and `ANTHROPIC_API_KEY` is read with `os.environ.get(...)` (no `.env` loader wired in yet). To run it as-is:
+Set `SUPABASE_URL`/`SUPABASE_KEY` (hardcoded near the top of `main.py`) to your project, then open `backend/mock_interview.py` and paste your Groq key on line 51:
 
-```bash
-export ANTHROPIC_API_KEY="your-key-here"
+```python
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "your-groq-key-here")
 ```
 
-…and edit `SUPABASE_URL` / `SUPABASE_KEY` in `main.py` directly to point at your own Supabase project.
-
-**To use a proper `.env` file instead** (recommended, not yet implemented):
-```bash
-pip install python-dotenv
-```
-then add `from dotenv import load_dotenv; load_dotenv()` to the top of `main.py` and switch the hardcoded Supabase values to `os.environ.get(...)` — they currently aren't read from environment variables.
+Get a free Groq key at: https://console.groq.com
 
 Run the server:
 ```bash
@@ -141,9 +135,9 @@ python -m uvicorn main:app --reload --port 8000
 ### Frontend
 No build step — static files only.
 ```bash
-python -m http.server 3000
+python -m http.server 8080
 ```
-Open `http://localhost:3000/index.html`. Frontend pages call the backend directly at `http://localhost:8000` (hardcoded in `login.js`, `dashboard.js`, `interview.js`, `mock-interview.js`), so the backend must be running first.
+Open `http://localhost:8080/interview.html`. Frontend pages call the backend directly at `http://localhost:8000` (hardcoded in `login.js`, `dashboard.js`, `interview.js`, `mock-interview.js`), so the backend must be running first.
 
 ---
 
@@ -199,7 +193,7 @@ Full schema-level docs at `/api/docs` once the backend is running.
 
 ---
 
-## 👨‍💻 Author
+## 👨💻 Author
 
 **Tanishq Sharma** — B.Tech Electronics & Communication Engineering, IIIT Kota
 
