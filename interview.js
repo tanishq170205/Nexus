@@ -210,7 +210,7 @@ async function loadQuestions() {
 
   for (var i = 0; i < needed; i++) {
     try {
-      var url = 'http://localhost:8000/api/questions/random?domain=' + domain;
+      var url = 'https://nexus-z3lz.onrender.com/api/questions/random?domain=' + domain;
       var res = await fetch(url);
       var data = await res.json();
       sess.questions.push(data);
@@ -452,7 +452,7 @@ async function runCode() {
     '<div style="color:#8B949E;margin-bottom:8px;">Running test cases…</div>';
 
   try {
-    var res = await fetch('http://localhost:8000/api/execute', {
+    var res = await fetch('https://nexus-z3lz.onrender.com/api/execute', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -466,7 +466,7 @@ async function runCode() {
   } catch (e) {
     console.error('[runCode] execute failed:', e);
     document.getElementById('tab-output').innerHTML =
-      '<div style="color:#F85149;">Could not reach the execution server. Is the backend running on localhost:8000?</div>';
+      '<div style="color:#F85149;">Could not reach the execution server. Is the backend running on Render?</div>';
   }
 }
 
@@ -516,7 +516,7 @@ async function submitCode() {
   var secs = elapsed % 60;
 
   try {
-    var res = await fetch('http://localhost:8000/api/execute', {
+    var res = await fetch('https://nexus-z3lz.onrender.com/api/execute', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -542,7 +542,7 @@ async function submitCode() {
   } catch (e) {
     console.error('[submitCode] execute failed:', e);
     document.getElementById('tab-verdict').innerHTML =
-      '<div style="color:#F85149;">Could not reach the execution server. Is the backend running on localhost:8000?</div>';
+      '<div style="color:#F85149;">Could not reach the execution server. Is the backend running on Render?</div>';
   }
 }
 

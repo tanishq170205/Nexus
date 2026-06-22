@@ -491,7 +491,7 @@ async function startInterview() {
   if (topic === 'dsa') {
     // Fetch live LeetCode question
     try {
-      var res = await fetch('http://localhost:8000/api/leetcode/random');
+      var res = await fetch('https://nexus-z3lz.onrender.com/api/leetcode/random');
       var data = await res.json();
       state.iv.questions = [{
         q: data.title + ' (' + data.difficulty + ')',

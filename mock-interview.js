@@ -356,7 +356,7 @@ async function miStartSession() {
   startBtn.innerText = "Starting...";
   
   try {
-    const res = await fetch('http://localhost:8000/api/mi/start', {
+    const res = await fetch('https://nexus-z3lz.onrender.com/api/mi/start', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ role: miRole, experience: miExp, duration_mins: miDur })
@@ -403,7 +403,7 @@ async function miStartSession() {
     startBtn.innerText = "📷 Enable Camera & Start Interview →";
     showErrorBanner(`Couldn't connect to the interview server. ${
       err.message.includes('Failed to fetch')
-        ? 'Make sure the backend is running on localhost:8000.'
+        ? 'Make sure the backend is running on Render.'
         : err.message
     }`);
   }
@@ -427,7 +427,7 @@ async function sendCandidateMessage(text) {
   const typingId = appendTranscript('interviewer', '\u22ef  Thinking...');
 
   try {
-    const res = await fetch('http://localhost:8000/api/mi/message', {
+    const res = await fetch('https://nexus-z3lz.onrender.com/api/mi/message', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ session_id: miSessionId, text })
@@ -460,7 +460,7 @@ async function sendCandidateMessage(text) {
     console.error('[MockInterview] sendCandidateMessage error:', err);
     const typingNode = document.getElementById(typingId);
     if (typingNode) typingNode.querySelector('.mi-bubble').innerText =
-      'Connection error. Check that the backend is running on localhost:8000.';
+      'Connection error. Check that the backend is running on Render.';
   }
 }
 
@@ -529,7 +529,7 @@ async function finishMISession() {
   }
 
   try {
-    const res = await fetch('http://localhost:8000/api/mi/end', {
+    const res = await fetch('https://nexus-z3lz.onrender.com/api/mi/end', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ session_id: miSessionId })

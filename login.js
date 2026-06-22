@@ -148,7 +148,7 @@ var COLLEGES = [
 
 /* ── Form Submit — Real API calls ───────────────────────────── */
 (function initFormSubmit() {
-  var API = 'http://localhost:8000';
+  var API = 'https://nexus-z3lz.onrender.com';
 
   function showError(formId, message) {
     var existing = document.getElementById(formId + '-error');
